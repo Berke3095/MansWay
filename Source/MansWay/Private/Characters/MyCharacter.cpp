@@ -94,15 +94,6 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 	if (PlayerController)
 	{
-		/*const FRotator ControlRotation = Controller->GetControlRotation();
-		const FRotator ControlYawRotation(0, ControlRotation.Yaw, 0);
-
-		const FVector ForwardDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::Y);
-
-		AddMovementInput(ForwardDirection, Value.Y);
-		AddMovementInput(RightDirection, Value.X);*/
-
 		if (FMath::Abs(Value.X) > 0.0f || FMath::Abs(Value.Y) > 0.0f) { Speed = 1.0f; }
 
 		if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 0.0f; } // Forward
