@@ -9,6 +9,12 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+// Components
+class UCapsuleComponent;
+class USkeletalMeshComponent;
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class MANSWAY_API AMyCharacter : public ACharacter
 {
@@ -24,7 +30,24 @@ private:
 	/*
 		REFERENCES
 	*/
+	void SetupReferences();
 	APlayerController* PlayerController{};
+
+	/*
+		COMPONENTS
+	*/
+	void SetupComponents();
+
+	UCapsuleComponent* CapsuleComponent{};
+	USkeletalMeshComponent* MeshComponent{};
+
+	UPROPERTY(EditDefaultsOnly)
+	USpringArmComponent* SpringArm{};
+	const float StartingTargetArmLength{ 300.0f };
+	const FVector StartingSocketOffset{ FVector(0.0f, 50.0f, 50.0f) };
+
+	UPROPERTY(EditDefaultsOnly)
+	UCameraComponent* Camera{};
 
 	/*
 		INPUT
@@ -32,14 +55,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* CharacterMappingContext{};
 
-	void Move(const FInputActionValue& InputValue);
-	void Look(const FInputActionValue& InputValue);
+	void Move(const FInputActionValue& InputValue1);
+	void Look(const FInputActionValue& InputValue1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookAction{};
+	
+	void UseControllerYaw(float DeltaTime1);
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
