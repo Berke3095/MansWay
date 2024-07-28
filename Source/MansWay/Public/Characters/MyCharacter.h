@@ -56,6 +56,9 @@ private:
 	UInputMappingContext* CharacterMappingContext{};
 
 	void Move(const FInputActionValue& InputValue1);
+	void StopMove();
+	float MoveDirection{};
+	float Speed{ 0.0f };
 	void Look(const FInputActionValue& InputValue1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -69,4 +72,8 @@ private:
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+
+	FORCEINLINE const float GetMoveDirection() const { return MoveDirection; }
+	FORCEINLINE const float GetSpeed() const { return Speed; }
 };

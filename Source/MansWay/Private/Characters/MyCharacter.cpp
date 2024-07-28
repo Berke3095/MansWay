@@ -9,13 +9,16 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h" 
 
+// Attributes
+#include "GameFramework/CharacterMovementComponent.h"
+
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetupComponents();
-
 	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
 
 void AMyCharacter::BeginPlay()
@@ -49,24 +52,40 @@ void AMyCharacter::SetupReferences()
 void AMyCharacter::SetupComponents()
 {
 	CapsuleComponent = GetCapsuleComponent();
-	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CapsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-	CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-	CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	if (CapsuleComponent)
+	{
+		CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		CapsuleComponent->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+		CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")) }
 
 	MeshComponent = GetMesh();
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	if (MeshComponent)
+	{
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")) }
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->TargetArmLength = StartingTargetArmLength;
-	SpringArm->SocketOffset = StartingSocketOffset;
+	if (SpringArm)
+	{
+		SpringArm->SetupAttachment(RootComponent);
+		SpringArm->bUsePawnControlRotation = true;
+		SpringArm->TargetArmLength = StartingTargetArmLength;
+		SpringArm->SocketOffset = StartingSocketOffset;
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - SpringArm is null.")) }
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonShoulderCamera"));
-	Camera->SetupAttachment(SpringArm);
+	if (Camera)
+	{
+		Camera->SetupAttachment(SpringArm);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - Camera is null.")) }
 }
 
 void AMyCharacter::Move(const FInputActionValue& InputValue1)
@@ -75,16 +94,33 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 	if (PlayerController)
 	{
-		const FRotator ControlRotation = Controller->GetControlRotation();
+		/*const FRotator ControlRotation = Controller->GetControlRotation();
 		const FRotator ControlYawRotation(0, ControlRotation.Yaw, 0);
 
 		const FVector ForwardDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::Y);
 
 		AddMovementInput(ForwardDirection, Value.Y);
-		AddMovementInput(RightDirection, Value.X);
+		AddMovementInput(RightDirection, Value.X);*/
+
+		if (FMath::Abs(Value.X) > 0.0f || FMath::Abs(Value.Y) > 0.0f) { Speed = 1.0f; }
+
+		if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 0.0f; } // Forward
+		else if (Value.X == 1.0f && Value.Y == 1.0f) { MoveDirection = 1.0f; } // Right Forward
+		else if (Value.X == 1.0f && Value.Y == 0.0f) { MoveDirection = 2.0f; } // Right
+		else if (Value.X == 1.0f && Value.Y == -1.0f) { MoveDirection = 3.0f; } // Right Back
+		else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 4.0f; } // Back
+		else if (Value.X == -1.0f && Value.Y == -1.0f) { MoveDirection = 5.0f; } // Left Back
+		else if (Value.X == -1.0f && Value.Y == 0.0f) { MoveDirection = 6.0f; } // Left
+		else if (Value.X == -1.0f && Value.Y == 1.0f) { MoveDirection = 7.0f; } // Left Forward
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
+}
+
+void AMyCharacter::StopMove()
+{
+	MoveDirection = 0.0f;
+	Speed = 0.0f;
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
@@ -115,6 +151,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (MoveAction)
 		{
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopMove);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - MoveAction is null.")) }
 
