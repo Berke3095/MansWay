@@ -20,7 +20,7 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (MyCharacter)
 	{
 		CharacterDirection = MyCharacter->GetMoveDirection();
-		Speed = MyCharacter->GetSpeed();
+		ForwardSpeed = MyCharacter->GetForwardSpeed();
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacter is null.")) }
 }

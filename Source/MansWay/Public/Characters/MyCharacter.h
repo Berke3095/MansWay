@@ -57,8 +57,8 @@ private:
 
 	void Move(const FInputActionValue& InputValue1);
 	void StopMove();
-	float MoveDirection{};
-	float Speed{ 0.0f };
+	float MoveDirection{2.0f};
+	float ForwardSpeed{0.0f};
 	void Look(const FInputActionValue& InputValue1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -75,5 +75,5 @@ private:
 public:
 
 	FORCEINLINE const float GetMoveDirection() const { return MoveDirection; }
-	FORCEINLINE const float GetSpeed() const { return Speed; }
+	FORCEINLINE const float GetForwardSpeed() const { return ForwardSpeed; }
 };

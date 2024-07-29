@@ -26,5 +26,5 @@ protected:
 	float CharacterDirection{};
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	float Speed{};
+	float ForwardSpeed{};
 };

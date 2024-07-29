@@ -94,24 +94,26 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 	if (PlayerController)
 	{
-		if (FMath::Abs(Value.X) > 0.0f || FMath::Abs(Value.Y) > 0.0f) { Speed = 1.0f; }
+		if (Value.Y == 1.0f) { ForwardSpeed = 1.0f; }
+		else if (Value.Y == -1.0f) { ForwardSpeed = -1.0f; }
+		else if (Value.Y == 0.0f) { ForwardSpeed = 0.0f; }
 
-		if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 0.0f; } // Forward
-		else if (Value.X == 1.0f && Value.Y == 1.0f) { MoveDirection = 1.0f; } // Right Forward
-		else if (Value.X == 1.0f && Value.Y == 0.0f) { MoveDirection = 2.0f; } // Right
-		else if (Value.X == 1.0f && Value.Y == -1.0f) { MoveDirection = 3.0f; } // Right Back
-		else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 4.0f; } // Back
-		else if (Value.X == -1.0f && Value.Y == -1.0f) { MoveDirection = 5.0f; } // Left Back
-		else if (Value.X == -1.0f && Value.Y == 0.0f) { MoveDirection = 6.0f; } // Left
-		else if (Value.X == -1.0f && Value.Y == 1.0f) { MoveDirection = 7.0f; } // Left Forward
+		if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 2.0f; } // Forward
+		else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 2.0f; } // Back
+		else if ((Value.X == 1.0f && Value.Y == 1.0f) || 
+			(Value.X == 1.0f && Value.Y == 0.0f) || 
+			(Value.X == 1.0f && Value.Y == -1.0f)) { MoveDirection = 3.0f; } // Right Direction
+		else if ((Value.X == -1.0f && Value.Y == -1.0f) || 
+			(Value.X == -1.0f && Value.Y == 0.0f) || 
+			(Value.X == -1.0f && Value.Y == 1.0f)) { MoveDirection = 1.0f; } // Left Direction
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
 }
 
 void AMyCharacter::StopMove()
 {
-	MoveDirection = 0.0f;
-	Speed = 0.0f;
+	MoveDirection = 2.0f;
+	ForwardSpeed = 0.0f;
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
