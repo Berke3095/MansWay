@@ -36,8 +36,6 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
-
-	UE_LOG(LogTemp, Warning, TEXT("Pitch is: %f and Yaw is: %f"), CharacterPitch, CharacterYaw);
 }
 
 void AMyCharacter::SetupReferences()
@@ -132,11 +130,11 @@ void AMyCharacter::Look(const FInputActionValue& InputValue1)
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
 {
-	FRotator TargetActorRotation(0.0f, GetControlRotation().Yaw, 0.0f);
-	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, 10.0f);
-	SetActorRotation(InterpolatedRotation);
-
 	if (CharacterYaw != 0) { CharacterYaw = 0.0f; }
+
+	FRotator TargetActorRotation(0.0f, GetControlRotation().Yaw, 0.0f);
+	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, 3.0f);
+	SetActorRotation(InterpolatedRotation);
 }
 
 void AMyCharacter::AimOffset(float DeltaTime1)
