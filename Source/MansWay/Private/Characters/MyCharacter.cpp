@@ -104,24 +104,6 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 		AddMovementInput(ForwardDirection, Value.Y);
 		AddMovementInput(RightDirection, Value.X);
 	}
-	
-	//// Root Motion
-	//if (PlayerController)
-	//{
-	//	if (Value.Y == 1.0f) { ForwardSpeed = 1.0f; }
-	//	else if (Value.Y == -1.0f) { ForwardSpeed = -1.0f; }
-	//	else if (Value.Y == 0.0f) { ForwardSpeed = 0.0f; }
-
-	//	if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 2.0f; } // Forward
-	//	else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 2.0f; } // Back
-	//	else if ((Value.X == 1.0f && Value.Y == 1.0f) || 
-	//		(Value.X == 1.0f && Value.Y == 0.0f) || 
-	//		(Value.X == 1.0f && Value.Y == -1.0f)) { MoveDirection = 3.0f; } // Right Direction
-	//	else if ((Value.X == -1.0f && Value.Y == -1.0f) || 
-	//		(Value.X == -1.0f && Value.Y == 0.0f) || 
-	//		(Value.X == -1.0f && Value.Y == 1.0f)) { MoveDirection = 1.0f; } // Left Direction
-	//}
-	//else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
