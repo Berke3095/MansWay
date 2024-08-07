@@ -12,6 +12,8 @@
 // Attributes
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 
 AMyCharacter::AMyCharacter()
 {
@@ -19,7 +21,7 @@ AMyCharacter::AMyCharacter()
 
 	SetupComponents();
 	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 }
 
 void AMyCharacter::BeginPlay()
@@ -33,7 +35,7 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UseControllerYaw(DeltaTime);
+	AimOffset(DeltaTime);
 }
 
 void AMyCharacter::SetupReferences()
@@ -103,8 +105,15 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 		AddMovementInput(ForwardDirection, Value.Y);
 		AddMovementInput(RightDirection, Value.X);
+
+		if (Speed != DefaultSpeed) { Speed = DefaultSpeed; }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
+}
+
+void AMyCharacter::StopMove()
+{
+	Speed = 0.0f;
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
@@ -124,6 +133,23 @@ void AMyCharacter::UseControllerYaw(float DeltaTime1)
 	FRotator TargetActorRotation(0.0f, GetControlRotation().Yaw, 0.0f);
 	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, 10.0f);
 	SetActorRotation(InterpolatedRotation);
+
+	if (CharacterYaw != 0) { CharacterYaw = 0.0f; }
+}
+
+void AMyCharacter::AimOffset(float DeltaTime1)
+{
+	FRotator ActorForwardRotation = GetActorForwardVector().Rotation();
+	FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), ActorForwardRotation);
+	if (Speed > 0)
+	{
+		UseControllerYaw(DeltaTime1);
+	}
+	else
+	{
+		CharacterYaw = DeltaRotation.Yaw;
+	}
+	CharacterPitch = DeltaRotation.Pitch;
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -135,6 +161,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (MoveAction)
 		{
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopMove);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - MoveAction is null.")) }
 

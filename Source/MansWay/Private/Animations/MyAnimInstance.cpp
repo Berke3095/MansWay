@@ -24,7 +24,10 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (MyCharacterMovement)
 	{
 		CharacterDirection = UKismetAnimationLibrary::CalculateDirection(MyCharacterMovement->Velocity, MyCharacter->GetActorRotation());
-		Speed = UKismetMathLibrary::VSizeXY(MyCharacterMovement->Velocity);
+		Speed = MyCharacter->GetSpeed();
+
+		CharacterYaw = MyCharacter->GetCharacterYaw();
+		CharacterPitch = MyCharacter->GetCharacterPitch();
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")) }
 }

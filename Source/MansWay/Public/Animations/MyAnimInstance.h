@@ -27,4 +27,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float CharacterDirection{};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float CharacterPitch{};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float CharacterYaw{};
 };

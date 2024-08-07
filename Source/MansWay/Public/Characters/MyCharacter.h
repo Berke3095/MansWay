@@ -28,6 +28,12 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	/*
+		ATTRIBUTES
+	*/
+	float DefaultSpeed{ 250.0f };
+	float SprintSpeed{ 450.0f };
+
+	/*
 		REFERENCES
 	*/
 	void SetupReferences();
@@ -56,6 +62,7 @@ private:
 	UInputMappingContext* CharacterMappingContext{};
 
 	void Move(const FInputActionValue& InputValue1);
+	void StopMove();
 	void Look(const FInputActionValue& InputValue1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -64,9 +71,25 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookAction{};
 	
+	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
+
+	/*
+		OFFSET
+	*/
+	float CharacterYaw{};
+	float CharacterPitch{};
+
+	void AimOffset(float DeltaTime1);
 
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+
+	FORCEINLINE const float GetCharacterYaw() const { return CharacterYaw; }
+	FORCEINLINE const float GetCharacterPitch() const { return CharacterPitch; }
+	
+	FORCEINLINE const float GetSpeed() const { return Speed; }
 };
