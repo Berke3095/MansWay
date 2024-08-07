@@ -104,6 +104,7 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 		AddMovementInput(ForwardDirection, Value.Y);
 		AddMovementInput(RightDirection, Value.X);
 	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
