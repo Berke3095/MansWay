@@ -36,6 +36,8 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("Pitch is: %f and Yaw is: %f"), CharacterPitch, CharacterYaw);
 }
 
 void AMyCharacter::SetupReferences()
