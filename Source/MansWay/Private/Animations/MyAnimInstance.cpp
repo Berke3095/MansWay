@@ -10,17 +10,21 @@ void UMyAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	MyCharacter = Cast<AMyCharacter>(TryGetPawnOwner());
-	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeInitializeAnimation - MyCharacter is null.")) }
+	if (MyCharacter)
+	{
+		MyCharacterMovement = MyCharacter->GetCharacterMovement();
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeInitializeAnimation - MyCharacter is null.")); }
 }
 
 void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
-	if (MyCharacter)
+	if (MyCharacterMovement)
 	{
-		CharacterDirection = MyCharacter->GetMoveDirection();
-		ForwardSpeed = MyCharacter->GetForwardSpeed();
+		CharacterDirection = UKismetAnimationLibrary::CalculateDirection(MyCharacterMovement->Velocity, MyCharacter->GetActorRotation());
+		Speed = UKismetMathLibrary::VSizeXY(MyCharacterMovement->Velocity);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacter is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")) }
 }

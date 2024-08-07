@@ -23,8 +23,8 @@ private:
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	float CharacterDirection{};
+	float Speed{};
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	float ForwardSpeed{};
+	float CharacterDirection{};
 };

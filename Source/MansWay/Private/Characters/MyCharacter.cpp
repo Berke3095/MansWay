@@ -12,13 +12,14 @@
 // Attributes
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 AMyCharacter::AMyCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetupComponents();
 	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 }
 
 void AMyCharacter::BeginPlay()
@@ -94,26 +95,33 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 	if (PlayerController)
 	{
-		if (Value.Y == 1.0f) { ForwardSpeed = 1.0f; }
-		else if (Value.Y == -1.0f) { ForwardSpeed = -1.0f; }
-		else if (Value.Y == 0.0f) { ForwardSpeed = 0.0f; }
+		const FRotator ControlRotation = Controller->GetControlRotation();
+		const FRotator ControlYawRotation(0, ControlRotation.Yaw, 0);
 
-		if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 2.0f; } // Forward
-		else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 2.0f; } // Back
-		else if ((Value.X == 1.0f && Value.Y == 1.0f) || 
-			(Value.X == 1.0f && Value.Y == 0.0f) || 
-			(Value.X == 1.0f && Value.Y == -1.0f)) { MoveDirection = 3.0f; } // Right Direction
-		else if ((Value.X == -1.0f && Value.Y == -1.0f) || 
-			(Value.X == -1.0f && Value.Y == 0.0f) || 
-			(Value.X == -1.0f && Value.Y == 1.0f)) { MoveDirection = 1.0f; } // Left Direction
+		const FVector ForwardDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(ControlYawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(ForwardDirection, Value.Y);
+		AddMovementInput(RightDirection, Value.X);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
-}
+	
+	//// Root Motion
+	//if (PlayerController)
+	//{
+	//	if (Value.Y == 1.0f) { ForwardSpeed = 1.0f; }
+	//	else if (Value.Y == -1.0f) { ForwardSpeed = -1.0f; }
+	//	else if (Value.Y == 0.0f) { ForwardSpeed = 0.0f; }
 
-void AMyCharacter::StopMove()
-{
-	MoveDirection = 2.0f;
-	ForwardSpeed = 0.0f;
+	//	if (Value.X == 0.0f && Value.Y == 1.0f) { MoveDirection = 2.0f; } // Forward
+	//	else if (Value.X == 0.0f && Value.Y == -1.0f) { MoveDirection = 2.0f; } // Back
+	//	else if ((Value.X == 1.0f && Value.Y == 1.0f) || 
+	//		(Value.X == 1.0f && Value.Y == 0.0f) || 
+	//		(Value.X == 1.0f && Value.Y == -1.0f)) { MoveDirection = 3.0f; } // Right Direction
+	//	else if ((Value.X == -1.0f && Value.Y == -1.0f) || 
+	//		(Value.X == -1.0f && Value.Y == 0.0f) || 
+	//		(Value.X == -1.0f && Value.Y == 1.0f)) { MoveDirection = 1.0f; } // Left Direction
+	//}
+	//else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
@@ -144,7 +152,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (MoveAction)
 		{
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopMove);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - MoveAction is null.")) }
 

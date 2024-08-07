@@ -43,8 +43,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	USpringArmComponent* SpringArm{};
-	const float StartingTargetArmLength{ 300.0f };
-	const FVector StartingSocketOffset{ FVector(0.0f, 50.0f, 50.0f) };
+	const float StartingTargetArmLength{ 100.0f };
+	const FVector StartingSocketOffset{ FVector(0.0f, 60.0f, 45.0f) };
 
 	UPROPERTY(EditDefaultsOnly)
 	UCameraComponent* Camera{};
@@ -56,9 +56,6 @@ private:
 	UInputMappingContext* CharacterMappingContext{};
 
 	void Move(const FInputActionValue& InputValue1);
-	void StopMove();
-	float MoveDirection{2.0f};
-	float ForwardSpeed{0.0f};
 	void Look(const FInputActionValue& InputValue1);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -69,11 +66,7 @@ private:
 	
 	void UseControllerYaw(float DeltaTime1);
 
+
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-public:
-
-	FORCEINLINE const float GetMoveDirection() const { return MoveDirection; }
-	FORCEINLINE const float GetForwardSpeed() const { return ForwardSpeed; }
 };
