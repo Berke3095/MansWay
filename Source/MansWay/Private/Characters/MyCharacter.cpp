@@ -1,17 +1,10 @@
 #include "Characters/MyCharacter.h"
-
-// Action library
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-
-// Components
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h" 
-
-// Attributes
 #include "GameFramework/CharacterMovementComponent.h"
-
 #include "Kismet/KismetMathLibrary.h"
 
 
