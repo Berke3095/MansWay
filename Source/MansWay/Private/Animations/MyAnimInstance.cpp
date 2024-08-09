@@ -28,5 +28,5 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		CharacterYaw = MyCharacter->GetCharacterYaw();
 		CharacterPitch = MyCharacter->GetCharacterPitch();
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")); }
 }

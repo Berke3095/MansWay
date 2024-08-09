@@ -40,9 +40,9 @@ void AMyCharacter::SetupReferences()
 		{
 			Subsystem->AddMappingContext(CharacterMappingContext, 0);
 		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - Subsystem is null.")) }
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - Subsystem is null.")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - PlayerController is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - PlayerController is null.")); }
 }
 
 void AMyCharacter::SetupComponents()
@@ -56,7 +56,7 @@ void AMyCharacter::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")); }
 
 	MeshComponent = GetMesh();
 	if (MeshComponent)
@@ -64,7 +64,7 @@ void AMyCharacter::SetupComponents()
 		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")); }
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	if (SpringArm)
@@ -74,14 +74,14 @@ void AMyCharacter::SetupComponents()
 		SpringArm->TargetArmLength = StartingTargetArmLength;
 		SpringArm->SocketOffset = StartingSocketOffset;
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - SpringArm is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - SpringArm is null.")); }
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonShoulderCamera"));
 	if (Camera)
 	{
 		Camera->SetupAttachment(SpringArm);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - Camera is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - Camera is null.")); }
 }
 
 void AMyCharacter::Move(const FInputActionValue& InputValue1)
@@ -101,7 +101,7 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 
 		if (Speed != DefaultSpeed) { Speed = DefaultSpeed; }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")); }
 }
 
 void AMyCharacter::StopMove()
@@ -118,7 +118,12 @@ void AMyCharacter::Look(const FInputActionValue& InputValue1)
 		AddControllerYawInput(Value.X);
 		AddControllerPitchInput(Value.Y);
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Look - PlayerController is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Look - PlayerController is null.")); }
+}
+
+void AMyCharacter::BasicAttack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attack triggered"));
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
@@ -156,13 +161,19 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyCharacter::StopMove);
 		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - MoveAction is null.")) }
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - MoveAction is null.")); }
 
 		if (LookAction)
 		{
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - LookAction is null.")) }
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - LookAction is null.")); }
+
+		if (BasicAttackAction)
+		{
+			EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Triggered, this, &AMyCharacter::BasicAttack);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - BasicAttackAction is null.")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")) }
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")); }
 }

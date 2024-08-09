@@ -64,12 +64,16 @@ private:
 	void Move(const FInputActionValue& InputValue1);
 	void StopMove();
 	void Look(const FInputActionValue& InputValue1);
+	void BasicAttack();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookAction{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* BasicAttackAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
