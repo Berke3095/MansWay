@@ -76,7 +76,7 @@ void AMyCharacter::SetupComponents()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - SpringArm is null.")); }
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonShoulderCamera"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonShoulder Camera"));
 	if (Camera)
 	{
 		Camera->SetupAttachment(SpringArm);
