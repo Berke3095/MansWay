@@ -4,16 +4,16 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
-// Input
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-
-// Components
 class UCapsuleComponent;
 class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UCombatComponent;
+class AMyShield;
+
 
 UCLASS()
 class MANSWAY_API AMyCharacter : public ACharacter
@@ -38,6 +38,7 @@ private:
 	*/
 	void SetupReferences();
 	APlayerController* PlayerController{};
+	AMyShield* OverlappingShield{};
 
 	/*
 		COMPONENTS
@@ -55,6 +56,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	UCameraComponent* Camera{};
 
+	UCombatComponent* CombatComponent{};
+
 	/*
 		INPUT
 	*/
@@ -65,6 +68,7 @@ private:
 	void StopMove();
 	void Look(const FInputActionValue& InputValue1);
 	void BasicAttack();
+	void Interact();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
@@ -74,6 +78,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* BasicAttackAction{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* InteractAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
@@ -96,4 +103,7 @@ public:
 	FORCEINLINE const float GetCharacterPitch() const { return CharacterPitch; }
 	
 	FORCEINLINE const float GetSpeed() const { return Speed; }
+
+	FORCEINLINE void SetOverlappingShield(AMyShield* OverlappingShield1) { OverlappingShield = OverlappingShield1; }
+	FORCEINLINE const AMyShield* GetMyOverlappingShield() const { return OverlappingShield ? OverlappingShield : nullptr; }
 };
