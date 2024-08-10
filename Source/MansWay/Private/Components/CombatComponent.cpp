@@ -26,21 +26,24 @@ void UCombatComponent::GetReferences()
 	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::GetReferences - MyCharacter is null.")); }
 }
 
-void UCombatComponent::EquipShield(AMyShield* ShieldToEquip1)
+void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 {
-	if (MyCharacter && ShieldToEquip1)
+	if (MyCharacter && ActorToEquip1)
 	{
-		if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
+		if (ActorToEquip1->IsA<AMyShield>())
 		{
-			ShieldSocket->AttachActor(ShieldToEquip1, MyCharacter->GetMesh());
-		}
-		else { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
+			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
+			{
+				ShieldSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
+			}
+			else { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
 
-		EquippedShield = ShieldToEquip1;
-		EquippedShield->SetOwner(MyCharacter);
-		EquippedShield->SetEquippedSettings();
+			EquippedShield = Cast<AMyShield>(ActorToEquip1);
+			EquippedShield->SetOwner(MyCharacter);
+			EquippedShield->SetEquippedSettings();
+		}
 	}
 	else if (!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - MyCharacter is null.")); }
-	else if (!ShieldToEquip1) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ShieldToEquip1 is null.")); }
+	else if (!ActorToEquip1) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ActorToEquip1 is null.")); }
 }
 

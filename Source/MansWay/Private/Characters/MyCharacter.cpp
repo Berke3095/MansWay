@@ -137,10 +137,11 @@ void AMyCharacter::BasicAttack()
 
 void AMyCharacter::Interact()
 {
-	if (CombatComponent && OverlappingShield)
+	if (CombatComponent && OverlappingInteractable)
 	{
-		CombatComponent->EquipShield(OverlappingShield);
+		CombatComponent->EquipInteractable(OverlappingInteractable);
 	}
+	else if(!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)

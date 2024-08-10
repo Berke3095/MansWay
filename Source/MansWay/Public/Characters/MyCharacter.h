@@ -38,7 +38,7 @@ private:
 	*/
 	void SetupReferences();
 	APlayerController* PlayerController{};
-	AMyShield* OverlappingShield{};
+	AActor* OverlappingInteractable{};
 
 	/*
 		COMPONENTS
@@ -104,6 +104,6 @@ public:
 	
 	FORCEINLINE const float GetSpeed() const { return Speed; }
 
-	FORCEINLINE void SetOverlappingShield(AMyShield* OverlappingShield1) { OverlappingShield = OverlappingShield1; }
-	FORCEINLINE const AMyShield* GetMyOverlappingShield() const { return OverlappingShield ? OverlappingShield : nullptr; }
+	FORCEINLINE void SetOverlappingInteractable(AActor* OverlappingInteractable1) { OverlappingInteractable = OverlappingInteractable1; }
+	FORCEINLINE const AActor* GetMyOverlappingInteractable() const { return OverlappingInteractable ? OverlappingInteractable : nullptr; }
 };

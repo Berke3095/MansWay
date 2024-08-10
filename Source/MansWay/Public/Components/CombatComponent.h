@@ -26,5 +26,5 @@ private:
 
 public:
 
-	void EquipShield(AMyShield* ShieldToEquip1);
+	void EquipInteractable(AActor* ActorToEquip1);
 };

@@ -29,7 +29,7 @@ void AMyShield::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		MyCharacter = Cast<AMyCharacter>(OtherActor);
 		if (MyCharacter)
 		{
-			MyCharacter->SetOverlappingShield(this);
+			MyCharacter->SetOverlappingInteractable(this);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyShield::OnSphereOverlap - MyCharacter is null.")); }
 
@@ -41,10 +41,10 @@ void AMyShield::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 {
 	if (MyCharacter)
 	{
-		if (MyCharacter->GetMyOverlappingShield() == this)
+		if (MyCharacter->GetMyOverlappingInteractable() == this)
 		{
-			MyCharacter->SetOverlappingShield(nullptr);
-			UE_LOG(LogTemp, Warning, TEXT("Overlapping weapon is null."));
+			MyCharacter->SetOverlappingInteractable(nullptr);
+			UE_LOG(LogTemp, Warning, TEXT("Stopped overlapping"));
 		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyShield::OnSphereEndOverlap - MyCharacter is null.")); }
