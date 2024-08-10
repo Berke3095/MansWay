@@ -137,11 +137,16 @@ void AMyCharacter::BasicAttack()
 
 void AMyCharacter::Interact()
 {
-	if (CombatComponent && OverlappingInteractable)
+	if (Overlaps.Num() > 0)
 	{
-		CombatComponent->EquipInteractable(OverlappingInteractable);
+		ClosestInteractable = CalculateClosestOverlap();
+
+		if (CombatComponent && ClosestInteractable)
+		{
+			CombatComponent->EquipInteractable(ClosestInteractable);
+		}
+		else if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
 	}
-	else if(!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
@@ -200,4 +205,22 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - InteractAction is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")); }
+}
+
+AActor* AMyCharacter::CalculateClosestOverlap()
+{
+	AActor* ClosestActor = nullptr;
+	float MinDistance = FLT_MAX;
+	for (AActor* OverlappedActor : Overlaps)
+	{
+		float Distance = FVector::Dist(GetActorLocation(), OverlappedActor->GetActorLocation());
+
+		if (Distance < MinDistance)
+		{
+			MinDistance = Distance;
+			ClosestActor = OverlappedActor;
+		}
+	}
+
+	return ClosestActor;
 }

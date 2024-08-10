@@ -68,7 +68,7 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
 		}
 
-		if (MyCharacter->GetOverlappingInteractable() == ActorToEquip1) { MyCharacter->SetOverlappingInteractable(nullptr); }
+		if (MyCharacter->GetClosestInteractable() == ActorToEquip1) { MyCharacter->SetClosestInteractable(nullptr); }
 	}
 	else if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - MyCharacter is null.")); }
 	else if (!ActorToEquip1) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ActorToEquip1 is null.")); }

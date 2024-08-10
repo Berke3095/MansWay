@@ -38,7 +38,7 @@ private:
 	*/
 	void SetupReferences();
 	APlayerController* PlayerController{};
-	AActor* OverlappingInteractable{};
+	AActor* ClosestInteractable{};
 
 	/*
 		COMPONENTS
@@ -90,9 +90,10 @@ private:
 	*/
 	float CharacterYaw{};
 	float CharacterPitch{};
-
 	void AimOffset(float DeltaTime1);
 
+	TArray<AActor*> Overlaps{};
+	AActor* CalculateClosestOverlap();
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -104,6 +105,9 @@ public:
 	
 	FORCEINLINE const float GetSpeed() const { return Speed; }
 
-	FORCEINLINE void SetOverlappingInteractable(AActor* OverlappingInteractable1) { OverlappingInteractable = OverlappingInteractable1; }
-	FORCEINLINE const AActor* GetOverlappingInteractable() const { return OverlappingInteractable ? OverlappingInteractable : nullptr; }
+	FORCEINLINE void SetClosestInteractable(AActor* ClosestInteractable1) { ClosestInteractable = ClosestInteractable1; }
+	FORCEINLINE const AActor* GetClosestInteractable() const { return ClosestInteractable ? ClosestInteractable : nullptr; }
+
+	FORCEINLINE void AddToOverlaps(AActor* InteractableToAdd1) { if (!Overlaps.Contains(InteractableToAdd1)) { Overlaps.Add(InteractableToAdd1); } }
+	FORCEINLINE void RemoveFromOverlaps(AActor* InteractableToRemove1) { if (Overlaps.Contains(InteractableToRemove1)) { Overlaps.Remove(InteractableToRemove1); } }
 };
