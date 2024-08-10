@@ -23,6 +23,7 @@ private:
 	AMyShield* EquippedShield{};
 
 	void GetReferences();
+	void DropInteractable(AActor* ActorToDrop1);
 
 public:
 

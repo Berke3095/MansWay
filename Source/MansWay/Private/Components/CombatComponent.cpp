@@ -26,12 +26,32 @@ void UCombatComponent::GetReferences()
 	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::GetReferences - MyCharacter is null.")); }
 }
 
+void UCombatComponent::DropInteractable(AActor* ActorToDrop1)
+{
+	if (MyCharacter && ActorToDrop1)
+	{
+		if (ActorToDrop1->IsAttachedTo(MyCharacter))
+		{
+			ActorToDrop1->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			ActorToDrop1->SetOwner(nullptr);
+		}
+	}
+	else if (!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
+	else if (!ActorToDrop1) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::DropInteractable - ActorToDrop1 is null.")); }
+}
+
 void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 {
 	if (MyCharacter && ActorToEquip1)
 	{
 		if (ActorToEquip1->IsA<AMyShield>())
 		{
+			if (EquippedShield)
+			{
+				DropInteractable(EquippedShield);
+				EquippedShield->SetDroppedSettings();
+			}
+
 			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
 			{
 				ShieldSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());

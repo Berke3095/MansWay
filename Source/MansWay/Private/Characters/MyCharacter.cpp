@@ -132,7 +132,7 @@ void AMyCharacter::Look(const FInputActionValue& InputValue1)
 
 void AMyCharacter::BasicAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack triggered"));
+	
 }
 
 void AMyCharacter::Interact()

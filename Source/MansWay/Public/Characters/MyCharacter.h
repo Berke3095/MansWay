@@ -105,5 +105,5 @@ public:
 	FORCEINLINE const float GetSpeed() const { return Speed; }
 
 	FORCEINLINE void SetOverlappingInteractable(AActor* OverlappingInteractable1) { OverlappingInteractable = OverlappingInteractable1; }
-	FORCEINLINE const AActor* GetMyOverlappingInteractable() const { return OverlappingInteractable ? OverlappingInteractable : nullptr; }
+	FORCEINLINE const AActor* GetOverlappingInteractable() const { return OverlappingInteractable ? OverlappingInteractable : nullptr; }
 };
