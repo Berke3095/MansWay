@@ -34,10 +34,16 @@ void UCombatComponent::DropInteractable(AActor* ActorToDrop1)
 		{
 			ActorToDrop1->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			ActorToDrop1->SetOwner(nullptr);
+
+			if (AMyWeapon* DroppedWeapon = Cast<AMyWeapon>(ActorToDrop1))
+			{
+				DroppedWeapon->SetDroppedSettings();
+			}
+			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
 		}
 	}
-	else if (!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
-	else if (!ActorToDrop1) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::DropInteractable - ActorToDrop1 is null.")); }
+	else if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
+	else if (!ActorToDrop1) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - ActorToDrop1 is null.")); }
 }
 
 void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
@@ -49,21 +55,22 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 			if (EquippedShield)
 			{
 				DropInteractable(EquippedShield);
-				EquippedShield->SetDroppedSettings();
 			}
 
 			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
 			{
+				EquippedShield = Cast<AMyShield>(ActorToEquip1);
+				EquippedShield->SetOwner(MyCharacter);
+				EquippedShield->SetEquippedSettings();
+
 				ShieldSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
 			}
-			else { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
-
-			EquippedShield = Cast<AMyShield>(ActorToEquip1);
-			EquippedShield->SetOwner(MyCharacter);
-			EquippedShield->SetEquippedSettings();
+			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
 		}
+
+		if (MyCharacter->GetOverlappingInteractable() == ActorToEquip1) { MyCharacter->SetOverlappingInteractable(nullptr); }
 	}
-	else if (!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - MyCharacter is null.")); }
-	else if (!ActorToEquip1) { UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::EquipShield - ActorToEquip1 is null.")); }
+	else if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - MyCharacter is null.")); }
+	else if (!ActorToEquip1) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ActorToEquip1 is null.")); }
 }
 
