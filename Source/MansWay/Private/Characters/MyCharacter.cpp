@@ -31,12 +31,6 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
-
-	if (ClosestInteractable)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Closest Interactable Actor: %s"), *ClosestInteractable->GetName());
-	}
-	
 }
 
 void AMyCharacter::SetupReferences()

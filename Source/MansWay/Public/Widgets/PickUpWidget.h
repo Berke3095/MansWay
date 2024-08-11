@@ -13,8 +13,6 @@ class MANSWAY_API UPickUpWidget : public UUserWidget
 	
 private:
 
-	virtual void NativeConstruct() override;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PickUpText{};
 
