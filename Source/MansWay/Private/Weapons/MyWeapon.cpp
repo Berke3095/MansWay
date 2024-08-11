@@ -52,6 +52,7 @@ void AMyWeapon::SetupComponents()
 		RootComponent = WeaponMesh;
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponMesh is null.")); }
 
