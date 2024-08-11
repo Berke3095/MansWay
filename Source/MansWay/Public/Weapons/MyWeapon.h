@@ -7,6 +7,7 @@
 class UBoxComponent;
 class USphereComponent;
 class AMyCharacter;
+class AMyWidgetManager;
 
 UCLASS()
 class MANSWAY_API AMyWeapon : public AActor
@@ -49,10 +50,10 @@ private:
 	/*
 		REFERENCES
 	*/
-	AMyCharacter* MyCharacter;
+	AMyCharacter* MyCharacter{};
+	AMyWidgetManager* WidgetManager{};
 
 public:
 	void SetEquippedSettings();
 	void SetDroppedSettings();
-
 };

@@ -2,6 +2,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Characters/MyCharacter.h"
+#include "Widgets/MyWidgetManager.h"
 
 AMyWeapon::AMyWeapon()
 {
@@ -14,6 +15,8 @@ void AMyWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	WidgetManager = AMyWidgetManager::GetInstance();
+	if(!WidgetManager) { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::BeginPlay - WidgetManager is null.")); }
 }
 
 void AMyWeapon::Tick(float DeltaTime)
@@ -30,6 +33,7 @@ void AMyWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		if (MyCharacter)
 		{
 			MyCharacter->AddToOverlaps(this);
+			WidgetManager->CreatePickUpWidget();
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::OnSphereOverlap - MyCharacter is null.")); }
 	}
@@ -40,6 +44,10 @@ void AMyWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	if (MyCharacter)
 	{
 		MyCharacter->RemoveFromOverlaps(this);
+		if (MyCharacter->GetOverlappingInteractables().Num() == 0)
+		{
+			WidgetManager->RemovePickUpWidget();
+		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::OnSphereEndOverlap - MyCharacter is null.")); }
 }

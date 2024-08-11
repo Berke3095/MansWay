@@ -93,8 +93,6 @@ private:
 	void AimOffset(float DeltaTime1);
 
 	TArray<AActor*> Overlaps{};
-	AActor* CalculateClosestOverlap();
-
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -110,4 +108,6 @@ public:
 
 	FORCEINLINE void AddToOverlaps(AActor* InteractableToAdd1) { if (!Overlaps.Contains(InteractableToAdd1)) { Overlaps.Add(InteractableToAdd1); } }
 	FORCEINLINE void RemoveFromOverlaps(AActor* InteractableToRemove1) { if (Overlaps.Contains(InteractableToRemove1)) { Overlaps.Remove(InteractableToRemove1); } }
+	FORCEINLINE TArray<AActor*> GetOverlappingInteractables() const { return Overlaps; }
+	AActor* CalculateClosestOverlap();
 };

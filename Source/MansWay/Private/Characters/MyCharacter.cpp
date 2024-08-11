@@ -31,6 +31,12 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+
+	if (ClosestInteractable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Closest Interactable Actor: %s"), *ClosestInteractable->GetName());
+	}
+	
 }
 
 void AMyCharacter::SetupReferences()
@@ -137,16 +143,11 @@ void AMyCharacter::BasicAttack()
 
 void AMyCharacter::Interact()
 {
-	if (Overlaps.Num() > 0)
+	if (CombatComponent && ClosestInteractable)
 	{
-		ClosestInteractable = CalculateClosestOverlap();
-
-		if (CombatComponent && ClosestInteractable)
-		{
-			CombatComponent->EquipInteractable(ClosestInteractable);
-		}
-		else if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
+		CombatComponent->EquipInteractable(ClosestInteractable);
 	}
+	else if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
