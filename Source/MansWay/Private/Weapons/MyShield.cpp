@@ -24,19 +24,19 @@ void AMyShield::SetupComponents()
 {
 	if (WeaponMesh)
 	{
-		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Shield type
+		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyShield::SetupComponents - WeaponMesh is null.")); }
 
 	if (WeaponBox)
 	{
-		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Shield type
+		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyShield::SetupComponents - WeaponBox is null.")); }
 
 	if (WeaponSphere)
 	{
-		WeaponSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Shield type
+		WeaponSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyShield::SetupComponents - WeaponSphere is null.")); }
 }
