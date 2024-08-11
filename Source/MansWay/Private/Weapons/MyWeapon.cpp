@@ -80,6 +80,40 @@ void AMyWeapon::SetupComponents()
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponSphere is null.")); }
 }
 
+void AMyWeapon::TurnOnPhysics()
+{
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponMesh->SetSimulatePhysics(true);
+
+		float TimeToTurnOffPhysics{ 5.0f };
+		GetWorldTimerManager().SetTimer(TurnOffPhysicsTimer, this, &AMyWeapon::TurnOffPhysics, TimeToTurnOffPhysics, false);
+
+		UE_LOG(LogTemp, Warning, TEXT("Physics turned on."));
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOnPhysics - WeaponMesh is null.")); }
+}
+
+void AMyWeapon::TurnOffPhysics()
+{
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetSimulatePhysics(false);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+		if (GetWorldTimerManager().IsTimerActive(TurnOffPhysicsTimer))
+		{
+			GetWorldTimerManager().ClearTimer(TurnOffPhysicsTimer);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Physics turned off"));
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOffPhysics - WeaponMesh is null.")); }
+}
+
 void AMyWeapon::SetEquippedSettings()
 {
 	if (GetOwner()->IsA<AMyCharacter>())
@@ -98,13 +132,7 @@ void AMyWeapon::SetEquippedSettings()
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponBox is null.")); }
 
-		if (WeaponMesh)
-		{
-			WeaponMesh->SetSimulatePhysics(false);
-			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponMesh is null.")); }
+		TurnOffPhysics();
 	}
 }
 
@@ -124,12 +152,6 @@ void AMyWeapon::SetDroppedSettings()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponBox is null.")); }
 
-	if (WeaponMesh)
-	{
-		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetSimulatePhysics(true);
-	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponMesh is null.")); }
+	TurnOnPhysics();
 }
 

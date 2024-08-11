@@ -42,6 +42,10 @@ private:
 
 	void SetupComponents();
 
+	void TurnOnPhysics();
+	FTimerHandle TurnOffPhysicsTimer{};
+	void TurnOffPhysics();
+	
 	/*
 		REFERENCES
 	*/
