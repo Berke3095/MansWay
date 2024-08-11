@@ -114,28 +114,30 @@ void AMyWeapon::TurnOffPhysics()
 
 void AMyWeapon::SetEquippedSettings()
 {
-	if (GetOwner()->IsA<AMyCharacter>())
-	{
-		if (WeaponSphere)
-		{
-			WeaponSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponSphere is null.")); }
+	TurnOffPhysics();
 
-		if (WeaponBox)
+	if (WeaponSphere)
+	{
+		WeaponSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponSphere is null.")); }
+
+	if (WeaponBox)
+	{
+		WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
+		if (GetOwner()->IsA<AMyCharacter>())
 		{
-			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
 			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap); // Enemy
 		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponBox is null.")); }
-
-		TurnOffPhysics();
 	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponBox is null.")); }
 }
 
 void AMyWeapon::SetDroppedSettings()
 {
+	TurnOnPhysics();
+
 	if (WeaponSphere)
 	{
 		WeaponSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -149,7 +151,5 @@ void AMyWeapon::SetDroppedSettings()
 		WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponBox is null.")); }
-
-	TurnOnPhysics();
 }
 
