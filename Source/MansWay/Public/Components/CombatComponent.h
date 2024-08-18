@@ -5,6 +5,7 @@
 #include "CombatComponent.generated.h"
 
 class AMyShield;
+class AMyAxe;
 class AMyCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -21,6 +22,7 @@ private:
 
 	AMyCharacter* MyCharacter{};
 	AMyShield* EquippedShield{};
+	AMyAxe* EquippedAxe{};
 
 	void GetReferences();
 	void DropInteractable(AActor* ActorToDrop1);

@@ -96,7 +96,7 @@ void AMyWeapon::TurnOnPhysics()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		WeaponMesh->SetSimulatePhysics(true);
-		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // PhysicsTool
+		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // PhysicsTool
 
 		float TimeToTurnOffPhysics{ 5.0f };
 		GetWorldTimerManager().SetTimer(TurnOffPhysicsTimer, this, &AMyWeapon::TurnOffPhysics, TimeToTurnOffPhysics, false);
@@ -111,7 +111,7 @@ void AMyWeapon::TurnOffPhysics()
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
+		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 
 		if (GetWorldTimerManager().IsTimerActive(TurnOffPhysicsTimer))
 		{

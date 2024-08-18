@@ -12,7 +12,6 @@ class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
-class AMyShield;
 
 
 UCLASS()

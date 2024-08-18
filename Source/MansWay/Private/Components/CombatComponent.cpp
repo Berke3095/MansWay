@@ -1,6 +1,7 @@
 #include "Components/CombatComponent.h"
 #include "Characters/MyCharacter.h"
 #include "Weapons/MyShield.h"
+#include "Weapons/MyAxe.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 UCombatComponent::UCombatComponent()
@@ -35,10 +36,7 @@ void UCombatComponent::DropInteractable(AActor* ActorToDrop1)
 			ActorToDrop1->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			ActorToDrop1->SetOwner(nullptr);
 
-			if (AMyWeapon* DroppedWeapon = Cast<AMyWeapon>(ActorToDrop1))
-			{
-				DroppedWeapon->SetDroppedSettings();
-			}
+			if (AMyWeapon* DroppedWeapon = Cast<AMyWeapon>(ActorToDrop1)) { DroppedWeapon->SetDroppedSettings(); }
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
 		}
 	}
@@ -52,10 +50,7 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 	{
 		if (ActorToEquip1->IsA<AMyShield>())
 		{
-			if (EquippedShield)
-			{
-				DropInteractable(EquippedShield);
-			}
+			if (EquippedShield) { DropInteractable(EquippedShield); }
 
 			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
 			{
@@ -65,7 +60,21 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 
 				ShieldSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
 			}
-			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ShieldSocket is null.")); }
+			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Shield_socket is null.")); }
+		}
+		else if (ActorToEquip1->IsA<AMyAxe>())
+		{
+			if (EquippedAxe) { DropInteractable(EquippedAxe); }
+
+			if (const USkeletalMeshSocket* AxeSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Axe_socket")))
+			{
+				EquippedAxe = Cast<AMyAxe>(ActorToEquip1);
+				EquippedAxe->SetOwner(MyCharacter);
+				EquippedAxe->SetEquippedSettings();
+
+				AxeSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
+			}
+			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Axe_socket is null.")); }
 		}
 
 		if (MyCharacter->GetClosestInteractable() == ActorToEquip1) { MyCharacter->SetClosestInteractable(nullptr); }

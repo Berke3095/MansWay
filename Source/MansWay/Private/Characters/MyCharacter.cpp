@@ -7,7 +7,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CombatComponent.h"
-#include "Weapons/MyShield.h"
 
 
 AMyCharacter::AMyCharacter()
