@@ -103,7 +103,10 @@ private:
 		ANIMATION
 	*/
 	UMyAnimInstance* MyAnimInstance{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* CombatLocomoMontage{};
+
 	int32 CombatLocomoInt{};
 	bool bStanceSwitch{}; // Combat mode if true
 
