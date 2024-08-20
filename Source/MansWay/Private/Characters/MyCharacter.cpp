@@ -182,12 +182,10 @@ void AMyCharacter::StanceSwitch()
 	if (bStanceSwitch)
 	{
 		bStanceSwitch = false;
-		if (MyAnimInstance) { MyAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything); }
 	}
 	else 
 	{ 
 		bStanceSwitch = true; 
-		if (MyAnimInstance) { MyAnimInstance->SetRootMotionMode(ERootMotionMode::RootMotionFromEverything); }
 	}
 }
 
