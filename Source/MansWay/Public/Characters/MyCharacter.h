@@ -12,7 +12,6 @@ class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
-class UAnimMontage;
 class UMyAnimInstance;
 
 
@@ -104,10 +103,8 @@ private:
 	*/
 	UMyAnimInstance* MyAnimInstance{};
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* CombatLocomoMontage{};
-
-	int32 CombatLocomoInt{};
+	float RootSpeed{};
+	float RootDirection{};
 	bool bStanceSwitch{}; // Combat mode if true
 
 
@@ -128,4 +125,8 @@ public:
 	FORCEINLINE void RemoveFromOverlaps(AActor* InteractableToRemove1) { if (Overlaps.Contains(InteractableToRemove1)) { Overlaps.Remove(InteractableToRemove1); } }
 	FORCEINLINE TArray<AActor*> GetOverlappingInteractables() const { return Overlaps; }
 	AActor* CalculateClosestOverlap();
+
+	FORCEINLINE const float GetRootSpeed() const { return RootSpeed; }
+	FORCEINLINE const float GetRootDir() const { return RootDirection; }
+	FORCEINLINE const bool GetbStanceSwitch() const { return bStanceSwitch; }
 };
