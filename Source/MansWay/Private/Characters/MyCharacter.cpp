@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CombatComponent.h"
+#include "Animation/AnimMontage.h"
+#include "Animations/MyAnimInstance.h"
 
 
 AMyCharacter::AMyCharacter()
@@ -21,7 +23,7 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	SetupReferences();
 }
 
@@ -44,6 +46,9 @@ void AMyCharacter::SetupReferences()
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - Subsystem is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - PlayerController is null.")); }
+
+	MyAnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - MyAnimInstance is null.")); }
 }
 
 void AMyCharacter::SetupComponents()
@@ -108,6 +113,83 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 		AddMovementInput(RightDirection, Value.X);
 
 		if (Speed != DefaultSpeed) { Speed = DefaultSpeed; }
+
+		if (Value.Y == 1.0f)
+		{
+			if (Value.X == 1.0f) { if (CombatLocomoInt != 2) { CombatLocomoInt = 2; } } // Right_Forward
+			else if (Value.X == 0.0f) { if (CombatLocomoInt != 1) { CombatLocomoInt = 1; } } // Forward
+			else if (Value.X == -1.0f) { if (CombatLocomoInt != 8) { CombatLocomoInt = 8; } } // Left_Forward
+		}
+		else if (Value.Y == 0.0f)
+		{
+			if (Value.X == 1.0f) { if (CombatLocomoInt != 3) { CombatLocomoInt = 3; } } // Right
+			else if (Value.X == 0.0f) { if (CombatLocomoInt != 0) { CombatLocomoInt = 0; } } // Idle
+			else if (Value.X == -1.0f) { if (CombatLocomoInt != 7) { CombatLocomoInt = 7; } } // Left
+		}
+		else if (Value.Y == -1.0f)
+		{
+			if (Value.X == 1.0f) { if (CombatLocomoInt != 4) { CombatLocomoInt = 4; } } // Right_Backward
+			else if (Value.X == 0.0f) { if (CombatLocomoInt != 5) { CombatLocomoInt = 5; } } // Backward
+			else if (Value.X == -1.0f) { if (CombatLocomoInt != 6) { CombatLocomoInt = 6; } } // Left_Backward
+		}
+
+		if (MyAnimInstance)
+		{
+			if (bStanceSwitch)
+			{
+				if (CombatLocomoMontage && !MyAnimInstance->Montage_IsPlaying(CombatLocomoMontage))
+				{
+					FName SectionName{};
+					switch (CombatLocomoInt)
+					{
+					case 0: // Idle
+						SectionName = FName("Idle");
+						break;
+					case 1: // Forward
+						SectionName = FName("Forward");
+						break;
+					case 2: // Right_Forward
+						SectionName = FName("Right_Forward");
+						break;
+					case 3: // Right
+						SectionName = FName("Right");
+						break;
+					case 4: // Right_Backward
+						SectionName = FName("Right_Backward");
+						break;
+					case 5: // Backward
+						SectionName = FName("Backward");
+						break;
+					case 6: // Left_Backward
+						SectionName = FName("Left_Backward");
+						break;
+					case 7: // Left
+						SectionName = FName("Left");
+						break;
+					case 8: // Left_Forward
+						SectionName = FName("Left_Forward");
+						break;
+					default:
+						break;
+					}
+
+					MyAnimInstance->Montage_Play(CombatLocomoMontage);
+					MyAnimInstance->Montage_JumpToSection(SectionName, CombatLocomoMontage);
+				}
+				else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - MyAnimInstance is null.")); }
+				else if (!CombatLocomoMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - CombatLocomoMontage is null.")); }
+			}
+			else
+			{
+				if (CombatLocomoMontage && MyAnimInstance->Montage_IsPlaying(CombatLocomoMontage))
+				{
+					MyAnimInstance->Montage_Stop(0.5f, CombatLocomoMontage);
+				}
+				else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - MyAnimInstance is null.")); }
+				else if (!CombatLocomoMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - CombatLocomoMontage is null.")); }
+			}
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - MyAnimInstance is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")); }
 }
@@ -115,6 +197,16 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 void AMyCharacter::StopMove()
 {
 	Speed = 0.0f;
+
+	if (!bStanceSwitch)
+	{
+		if (CombatLocomoMontage && MyAnimInstance->Montage_IsPlaying(CombatLocomoMontage))
+		{
+			MyAnimInstance->Montage_Stop(0.5f, CombatLocomoMontage);
+		}
+		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::StopMove - MyAnimInstance is null.")); }
+		else if (!CombatLocomoMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::StopMove - CombatLocomoMontage is null.")); }
+	}
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
@@ -131,7 +223,7 @@ void AMyCharacter::Look(const FInputActionValue& InputValue1)
 
 void AMyCharacter::BasicAttack()
 {
-	
+
 }
 
 void AMyCharacter::Interact()
@@ -141,6 +233,15 @@ void AMyCharacter::Interact()
 		CombatComponent->EquipInteractable(ClosestInteractable);
 	}
 	else if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
+}
+
+void AMyCharacter::StanceSwitch()
+{
+	if (bStanceSwitch)
+	{
+		bStanceSwitch = false;
+	}
+	else { bStanceSwitch = true; }
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
@@ -197,6 +298,12 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyCharacter::Interact);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - InteractAction is null.")); }
+
+		if (StanceSwitchAction)
+		{
+			EnhancedInputComponent->BindAction(StanceSwitchAction, ETriggerEvent::Started, this, &AMyCharacter::StanceSwitch);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - StanceSwitchAction is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")); }
 }

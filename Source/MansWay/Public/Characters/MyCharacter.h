@@ -12,6 +12,8 @@ class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
+class UAnimMontage;
+class UMyAnimInstance;
 
 
 UCLASS()
@@ -68,6 +70,7 @@ private:
 	void Look(const FInputActionValue& InputValue1);
 	void BasicAttack();
 	void Interact();
+	void StanceSwitch();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
@@ -80,6 +83,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* InteractAction{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* StanceSwitchAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
@@ -92,6 +98,16 @@ private:
 	void AimOffset(float DeltaTime1);
 
 	TArray<AActor*> Overlaps{};
+
+	/*
+		ANIMATION
+	*/
+	UMyAnimInstance* MyAnimInstance{};
+	UAnimMontage* CombatLocomoMontage{};
+	int32 CombatLocomoInt{};
+	bool bStanceSwitch{}; // Combat mode if true
+
+
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
