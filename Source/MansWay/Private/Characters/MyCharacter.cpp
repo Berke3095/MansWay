@@ -111,35 +111,8 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 		AddMovementInput(ForwardDirection, Value.Y);
 		AddMovementInput(RightDirection, Value.X);
 
-		if (Speed != DefaultSpeed) { Speed = DefaultSpeed; }
-
-		if (bStanceSwitch)
-		{
-			if (Value.Y == 1.0f)
-			{
-				if (RootSpeed != 1.0f) { RootSpeed = 1.0f; }
-
-				if (Value.X == 1.0f) { if (RootDirection != 1.0f) { RootDirection = 1.0f; } } // Right_Forward
-				else if (Value.X == 0.0f) { if (RootDirection != 0.0f) { RootDirection = 0.0f; } } // Forward
-				else if (Value.X == -1.0f) { if (RootDirection != -1.0f) { RootDirection = -1.0f; } } // Left_Forward
-			}
-			else if (Value.Y == 0.0f)
-			{
-				if (RootSpeed != 0.0f) { RootSpeed = 0.0f; }
-
-				if (Value.X == 1.0f) { if (RootDirection != 1.0f) { RootDirection = 1.0f; } } // Right
-				else if (Value.X == 0.0f) { if (RootDirection != 0.0f) { RootDirection = 0.0f; } } // Idle
-				else if (Value.X == -1.0f) { if (RootDirection != -1.0f) { RootDirection = -1.0f; } } // Left
-			}
-			else if (Value.Y == -1.0f)
-			{
-				if (RootSpeed != -1.0f) { RootSpeed = -1.0f; }
-
-				if (Value.X == 1.0f) { if (RootDirection != 1.0f) { RootDirection = 1.0f; } } // Right_Backward
-				else if (Value.X == 0.0f) { if (RootDirection != 0.0f) { RootDirection = 0.0f; } } // Backward
-				else if (Value.X == -1.0f) { if (RootDirection != -1.0f) { RootDirection = -1.0f; } } // Left_Backward
-			}
-		}
+		if (bStanceSwitch) { if (Speed != CombatSpeed) { Speed = CombatSpeed; } }
+		else { if (Speed != DefaultSpeed) { Speed = DefaultSpeed; } }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")); }
 }
@@ -147,8 +120,6 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 void AMyCharacter::StopMove()
 {
 	Speed = 0.0f;
-	RootSpeed = 0.0f;
-	RootDirection = 0.0f;
 }
 
 void AMyCharacter::Look(const FInputActionValue& InputValue1)
@@ -182,10 +153,14 @@ void AMyCharacter::StanceSwitch()
 	if (bStanceSwitch)
 	{
 		bStanceSwitch = false;
+		GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+		Speed = DefaultSpeed;
 	}
 	else 
 	{ 
 		bStanceSwitch = true; 
+		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
+		Speed = CombatSpeed;
 	}
 }
 

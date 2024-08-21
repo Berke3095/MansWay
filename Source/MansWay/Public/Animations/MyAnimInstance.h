@@ -35,11 +35,5 @@ protected:
 	float CharacterYaw{};
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	float RootSpeed{};
-
-	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	float RootDirection{};
-
-	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bSwitchStance{};
 };

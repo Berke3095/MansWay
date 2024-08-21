@@ -29,11 +29,6 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		CharacterPitch = MyCharacter->GetCharacterPitch();
 
 		bSwitchStance = MyCharacter->GetbStanceSwitch();
-		if (bSwitchStance)
-		{
-			RootSpeed = MyCharacter->GetRootSpeed();
-			RootDirection = MyCharacter->GetRootDir();
-		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")); }
 }

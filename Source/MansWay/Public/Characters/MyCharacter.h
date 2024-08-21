@@ -31,7 +31,8 @@ private:
 		ATTRIBUTES
 	*/
 	float DefaultSpeed{ 250.0f };
-	float SprintSpeed{ 450.0f };
+	float CombatSpeed{ 200.0 };
+	float SprintSpeed{ 350.0f };
 
 	/*
 		REFERENCES
@@ -103,8 +104,6 @@ private:
 	*/
 	UMyAnimInstance* MyAnimInstance{};
 
-	float RootSpeed{};
-	float RootDirection{};
 	bool bStanceSwitch{}; // Combat mode if true
 
 
@@ -126,7 +125,5 @@ public:
 	FORCEINLINE TArray<AActor*> GetOverlappingInteractables() const { return Overlaps; }
 	AActor* CalculateClosestOverlap();
 
-	FORCEINLINE const float GetRootSpeed() const { return RootSpeed; }
-	FORCEINLINE const float GetRootDir() const { return RootDirection; }
 	FORCEINLINE const bool GetbStanceSwitch() const { return bStanceSwitch; }
 };
