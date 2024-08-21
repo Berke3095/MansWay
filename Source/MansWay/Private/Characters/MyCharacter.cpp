@@ -154,13 +154,11 @@ void AMyCharacter::StanceSwitch()
 	{
 		bStanceSwitch = false;
 		GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
-		Speed = DefaultSpeed;
 	}
 	else 
 	{ 
 		bStanceSwitch = true; 
 		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
-		Speed = CombatSpeed;
 	}
 }
 
