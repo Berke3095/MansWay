@@ -30,7 +30,13 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AimOffset(DeltaTime);
+	Movement(DeltaTime);
+}
+
+void AMyCharacter::Movement(float DeltaTime1)
+{
+	AimOffset(DeltaTime1);
+	SwitchStanceCamera(DeltaTime1);
 }
 
 void AMyCharacter::SetupReferences()
@@ -96,6 +102,25 @@ void AMyCharacter::SetupComponents()
 	if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CombatComponent is null.")); }
 }
 
+void AMyCharacter::SwitchStanceCamera(float DeltaTime1)
+{
+	if (bInterpInProcess && SpringArm)
+	{
+		FVector CombatStanceOffset = FVector(0.0f, 70.0f, 20.0f);
+		FVector SocketToInterp = bCombatStance ? CombatStanceOffset : StartingSocketOffset;
+
+		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, DeltaTime1, 2.0);
+		SpringArm->SocketOffset = InterpolatedSocket;
+
+		float CombatTargetArm = 50.0f;
+		float TargetArmToInterp = bCombatStance ? CombatTargetArm : StartingTargetArmLength;
+
+		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, DeltaTime1, 2.0);
+		SpringArm->TargetArmLength = InterpolatedTargetArm;
+	}
+	else if(!Camera) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::CameraMovement - Camera is null.")); }
+}
+
 void AMyCharacter::Move(const FInputActionValue& InputValue1)
 {
 	const FVector2D Value = InputValue1.Get<FVector2D>();
@@ -111,7 +136,7 @@ void AMyCharacter::Move(const FInputActionValue& InputValue1)
 		AddMovementInput(ForwardDirection, Value.Y);
 		AddMovementInput(RightDirection, Value.X);
 
-		if (bStanceSwitch) { if (Speed != CombatSpeed) { Speed = CombatSpeed; } }
+		if (bCombatStance) { if (Speed != CombatSpeed) { Speed = CombatSpeed; } }
 		else { if (Speed != DefaultSpeed) { Speed = DefaultSpeed; } }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Move - PlayerController is null.")); }
@@ -150,15 +175,17 @@ void AMyCharacter::Interact()
 
 void AMyCharacter::StanceSwitch()
 {
-	if (bStanceSwitch)
+	if (bCombatStance)
 	{
-		bStanceSwitch = false;
+		bCombatStance = false;
 		GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+		InterpCamera();
 	}
 	else 
 	{ 
-		bStanceSwitch = true; 
+		bCombatStance = true;
 		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
+		InterpCamera();
 	}
 }
 
@@ -166,8 +193,9 @@ void AMyCharacter::UseControllerYaw(float DeltaTime1)
 {
 	if (CharacterYaw != 0) { CharacterYaw = 0.0f; }
 
+	float InterpTime = bCombatStance ? 10.0f : 3.0f;
 	FRotator TargetActorRotation(0.0f, GetControlRotation().Yaw, 0.0f);
-	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, 3.0f);
+	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, InterpTime);
 	SetActorRotation(InterpolatedRotation);
 }
 
@@ -181,9 +209,34 @@ void AMyCharacter::AimOffset(float DeltaTime1)
 	}
 	else
 	{
-		CharacterYaw = DeltaRotation.Yaw;
+		if (bCombatStance)
+		{
+			UseControllerYaw(DeltaTime1);
+		}
+		else { CharacterYaw = DeltaRotation.Yaw; }
 	}
 	CharacterPitch = DeltaRotation.Pitch;
+}
+
+void AMyCharacter::InterpCamera()
+{
+	if (GetWorldTimerManager().IsTimerActive(CameraInterpTimer))
+	{
+		GetWorldTimerManager().ClearTimer(CameraInterpTimer);
+	}
+
+	float TimeToInterp{ 3.0f };
+	GetWorldTimerManager().SetTimer(CameraInterpTimer, this, &AMyCharacter::StopCameraInterp, TimeToInterp, false);
+	bInterpInProcess = true;
+}
+
+void AMyCharacter::StopCameraInterp()
+{
+	if (GetWorldTimerManager().IsTimerActive(CameraInterpTimer))
+	{
+		GetWorldTimerManager().ClearTimer(CameraInterpTimer);
+	}
+	bInterpInProcess = false;
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

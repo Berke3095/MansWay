@@ -93,13 +93,13 @@ void AMyWeapon::TurnOnPhysics()
 {
 	if (WeaponMesh)
 	{
+		float TimeToTurnOffPhysics{ 5.0f };
+		GetWorldTimerManager().SetTimer(TurnOffPhysicsTimer, this, &AMyWeapon::TurnOffPhysics, TimeToTurnOffPhysics, false);
+
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		WeaponMesh->SetSimulatePhysics(true);
 		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // PhysicsTool
-
-		float TimeToTurnOffPhysics{ 5.0f };
-		GetWorldTimerManager().SetTimer(TurnOffPhysicsTimer, this, &AMyWeapon::TurnOffPhysics, TimeToTurnOffPhysics, false);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOnPhysics - WeaponMesh is null.")); }
 }
@@ -108,15 +108,15 @@ void AMyWeapon::TurnOffPhysics()
 {
 	if (WeaponMesh)
 	{
-		WeaponMesh->SetSimulatePhysics(false);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
-
 		if (GetWorldTimerManager().IsTimerActive(TurnOffPhysicsTimer))
 		{
 			GetWorldTimerManager().ClearTimer(TurnOffPhysicsTimer);
 		}
+
+		WeaponMesh->SetSimulatePhysics(false);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOffPhysics - WeaponMesh is null.")); }
 }

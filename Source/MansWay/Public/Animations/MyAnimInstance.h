@@ -35,5 +35,5 @@ protected:
 	float CharacterYaw{};
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	bool bSwitchStance{};
+	bool bCombatStance{};
 };

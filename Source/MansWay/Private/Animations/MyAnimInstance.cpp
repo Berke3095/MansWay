@@ -28,7 +28,7 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		CharacterYaw = MyCharacter->GetCharacterYaw();
 		CharacterPitch = MyCharacter->GetCharacterPitch();
 
-		bSwitchStance = MyCharacter->GetbStanceSwitch();
+		bCombatStance = MyCharacter->GetbCombatStance();
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("UMyAnimInstance::NativeUpdateAnimation - MyCharacterMovement is null.")); }
 }

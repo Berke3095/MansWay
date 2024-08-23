@@ -27,6 +27,8 @@ private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void Movement(float DeltaTime1);
+
 	/*
 		ATTRIBUTES
 	*/
@@ -58,6 +60,8 @@ private:
 	UCameraComponent* Camera{};
 
 	UCombatComponent* CombatComponent{};
+
+	void SwitchStanceCamera(float DeltaTime1);
 
 	/*
 		INPUT
@@ -104,8 +108,11 @@ private:
 	*/
 	UMyAnimInstance* MyAnimInstance{};
 
-	bool bStanceSwitch{}; // Combat mode if true
-
+	bool bCombatStance{}; // Combat mode if true
+	FTimerHandle CameraInterpTimer{};
+	void InterpCamera();
+	void StopCameraInterp();
+	bool bInterpInProcess{};
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -125,5 +132,5 @@ public:
 	FORCEINLINE TArray<AActor*> GetOverlappingInteractables() const { return Overlaps; }
 	AActor* CalculateClosestOverlap();
 
-	FORCEINLINE const bool GetbStanceSwitch() const { return bStanceSwitch; }
+	FORCEINLINE const bool GetbCombatStance() const { return bCombatStance; }
 };
