@@ -106,7 +106,7 @@ void AMyCharacter::SwitchStanceCamera(float DeltaTime1)
 {
 	if (bInterpInProcess && SpringArm)
 	{
-		FVector CombatStanceOffset = FVector(0.0f, 70.0f, 20.0f);
+		FVector CombatStanceOffset = FVector(0.0f, 50.0f, 20.0f);
 		FVector SocketToInterp = bCombatStance ? CombatStanceOffset : StartingSocketOffset;
 
 		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, DeltaTime1, 2.0);
