@@ -33,7 +33,7 @@ private:
 		ATTRIBUTES
 	*/
 	float DefaultSpeed{ 250.0f };
-	float CombatSpeed{ 200.0 };
+	float CombatSpeed{ 125.0 };
 	float SprintSpeed{ 350.0f };
 
 	/*
