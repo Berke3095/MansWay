@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CombatComponent.h"
 #include "Animations/MyAnimInstance.h"
+#include "Animation/AnimMontage.h"
 
 
 AMyCharacter::AMyCharacter()
@@ -191,7 +192,29 @@ void AMyCharacter::StanceSwitch()
 
 void AMyCharacter::Parry()
 {
+	if (bCanParry)
+	{
+		if (MyAnimInstance && ParryMontage)
+		{
+			bCanParry = false;
+			MyAnimInstance->Montage_Play(ParryMontage);
 
+			float ParryResetTime{ 3.0f };
+			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, ParryResetTime, false);
+		}
+		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - MyAnimInstance is null.")); }
+	}
+}
+
+void AMyCharacter::ResetParry()
+{
+	if (GetWorldTimerManager().IsTimerActive(ParryResetTimer))
+	{
+		GetWorldTimerManager().ClearTimer(ParryResetTimer);
+	}
+	bCanParry = true;
+
+	UE_LOG(LogTemp, Error, TEXT("Timer resetted"));
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)

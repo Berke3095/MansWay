@@ -13,6 +13,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
 class UMyAnimInstance;
+class UAnimMontage;
 
 
 UCLASS()
@@ -76,6 +77,7 @@ private:
 	void Interact();
 	void StanceSwitch();
 	void Parry();
+	void ResetParry();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
@@ -117,6 +119,11 @@ private:
 	void InterpCamera();
 	void StopCameraInterp();
 	bool bInterpInProcess{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* ParryMontage{};
+	bool bCanParry{true};
+	FTimerHandle ParryResetTimer{};
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

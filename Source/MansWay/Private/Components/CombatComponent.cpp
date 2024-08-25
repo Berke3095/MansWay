@@ -1,7 +1,7 @@
 #include "Components/CombatComponent.h"
 #include "Characters/MyCharacter.h"
 #include "Weapons/MyShield.h"
-#include "Weapons/MyAxe.h"
+#include "Weapons/MySword.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 UCombatComponent::UCombatComponent()
@@ -52,7 +52,7 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 		{
 			if (EquippedShield) { DropInteractable(EquippedShield); }
 
-			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_socket")))
+			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_Socket")))
 			{
 				EquippedShield = Cast<AMyShield>(ActorToEquip1);
 				EquippedShield->SetOwner(MyCharacter);
@@ -62,17 +62,17 @@ void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
 			}
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Shield_socket is null.")); }
 		}
-		else if (ActorToEquip1->IsA<AMyAxe>())
+		else if (ActorToEquip1->IsA<AMySword>())
 		{
-			if (EquippedAxe) { DropInteractable(EquippedAxe); }
+			if (EquippedWeapon) { DropInteractable(EquippedWeapon); }
 
-			if (const USkeletalMeshSocket* AxeSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Axe_socket")))
+			if (const USkeletalMeshSocket* SwordSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Sword_Socket")))
 			{
-				EquippedAxe = Cast<AMyAxe>(ActorToEquip1);
-				EquippedAxe->SetOwner(MyCharacter);
-				EquippedAxe->SetEquippedSettings();
+				EquippedWeapon = Cast<AMySword>(ActorToEquip1);
+				EquippedWeapon->SetOwner(MyCharacter);
+				EquippedWeapon->SetEquippedSettings();
 
-				AxeSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
+				SwordSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
 			}
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Axe_socket is null.")); }
 		}

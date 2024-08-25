@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h" 
 #include "Weapons/MyShield.h"
-#include "Weapons/MyAxe.h"
+#include "Weapons/MySword.h"
 
 AMyWidgetManager* AMyWidgetManager::Instance = nullptr;
 
@@ -46,12 +46,12 @@ void AMyWidgetManager::WidgetCheck()
 					PickUpWidget->SetPickUpText(ShieldText);
 				}
 			}
-			else if (MyCharacter->GetClosestInteractable()->IsA<AMyAxe>())
+			else if (MyCharacter->GetClosestInteractable()->IsA<AMySword>())
 			{
-				FString AxeText = "Pick Up Sword";
-				if (PickUpWidget->GetPickUpTextBlock()->GetText().ToString() != AxeText)
+				FString SwordText = "Pick Up Sword";
+				if (PickUpWidget->GetPickUpTextBlock()->GetText().ToString() != SwordText)
 				{
-					PickUpWidget->SetPickUpText(AxeText);
+					PickUpWidget->SetPickUpText(SwordText);
 				}
 			}
 		}
