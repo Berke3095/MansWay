@@ -192,7 +192,7 @@ void AMyCharacter::StanceSwitch()
 
 void AMyCharacter::Parry()
 {
-	if (bCanParry)
+	if (bCanParry && bCombatStance)
 	{
 		if (MyAnimInstance && ParryMontage)
 		{
