@@ -189,6 +189,11 @@ void AMyCharacter::StanceSwitch()
 	}
 }
 
+void AMyCharacter::Parry()
+{
+
+}
+
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
 {
 	if (CharacterYaw != 0) { CharacterYaw = 0.0f; }
@@ -275,6 +280,12 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInputComponent->BindAction(StanceSwitchAction, ETriggerEvent::Started, this, &AMyCharacter::StanceSwitch);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - StanceSwitchAction is null.")); }
+
+		if (ParryAction)
+		{
+			EnhancedInputComponent->BindAction(ParryAction, ETriggerEvent::Started, this, &AMyCharacter::Parry);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - ParryAction is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")); }
 }

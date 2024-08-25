@@ -48,7 +48,7 @@ void AMyWidgetManager::WidgetCheck()
 			}
 			else if (MyCharacter->GetClosestInteractable()->IsA<AMyAxe>())
 			{
-				FString AxeText = "Pick Up Axe";
+				FString AxeText = "Pick Up Sword";
 				if (PickUpWidget->GetPickUpTextBlock()->GetText().ToString() != AxeText)
 				{
 					PickUpWidget->SetPickUpText(AxeText);

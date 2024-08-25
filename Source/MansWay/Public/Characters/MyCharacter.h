@@ -75,6 +75,7 @@ private:
 	void BasicAttack();
 	void Interact();
 	void StanceSwitch();
+	void Parry();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
@@ -90,6 +91,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* StanceSwitchAction{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ParryAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
