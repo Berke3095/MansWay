@@ -203,6 +203,7 @@ void AMyCharacter::Parry()
 			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, ParryResetTime, false);
 		}
 		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - MyAnimInstance is null.")); }
+		else if (!ParryMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - ParryMontage is null.")); }
 	}
 }
 
@@ -215,6 +216,19 @@ void AMyCharacter::ResetParry()
 	bCanParry = true;
 
 	UE_LOG(LogTemp, Error, TEXT("Timer resetted"));
+}
+
+void AMyCharacter::HeavyAttack()
+{
+	if (bCombatStance)
+	{
+		if (MyAnimInstance && HeavyMontage)
+		{
+			MyAnimInstance->Montage_Play(HeavyMontage);
+		}
+		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - MyAnimInstance is null.")); }
+		else if (!HeavyMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - HeavyMontage is null.")); }
+	}
 }
 
 void AMyCharacter::UseControllerYaw(float DeltaTime1)
@@ -307,6 +321,12 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (ParryAction)
 		{
 			EnhancedInputComponent->BindAction(ParryAction, ETriggerEvent::Started, this, &AMyCharacter::Parry);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - ParryAction is null.")); }
+
+		if (HeavyAction)
+		{
+			EnhancedInputComponent->BindAction(HeavyAction, ETriggerEvent::Started, this, &AMyCharacter::HeavyAttack);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - ParryAction is null.")); }
 	}

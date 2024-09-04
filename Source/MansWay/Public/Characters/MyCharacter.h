@@ -78,6 +78,7 @@ private:
 	void StanceSwitch();
 	void Parry();
 	void ResetParry();
+	void HeavyAttack();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
@@ -96,6 +97,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ParryAction{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* HeavyAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float DeltaTime1);
@@ -124,6 +128,9 @@ private:
 	UAnimMontage* ParryMontage{};
 	bool bCanParry{true};
 	FTimerHandle ParryResetTimer{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* HeavyMontage{};
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
