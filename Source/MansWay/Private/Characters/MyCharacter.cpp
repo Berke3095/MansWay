@@ -54,7 +54,11 @@ void AMyCharacter::SetupReferences()
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - PlayerController is null.")); }
 
 	MyAnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - MyAnimInstance is null.")); }
+	if (MyAnimInstance)
+	{
+		MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AMyCharacter::OnNotifyBegin);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - MyAnimInstance is null.")); }
 }
 
 void AMyCharacter::SetupComponents()
@@ -119,7 +123,7 @@ void AMyCharacter::SwitchStanceCamera(float DeltaTime1)
 		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, DeltaTime1, 2.0);
 		SpringArm->TargetArmLength = InterpolatedTargetArm;
 	}
-	else if(!Camera) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::CameraMovement - Camera is null.")); }
+	else if (!Camera) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::CameraMovement - Camera is null.")); }
 }
 
 void AMyCharacter::Move(const FInputActionValue& InputValue1)
@@ -182,8 +186,8 @@ void AMyCharacter::StanceSwitch()
 		GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 		InterpCamera();
 	}
-	else 
-	{ 
+	else
+	{
 		bCombatStance = true;
 		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 		InterpCamera();
@@ -224,7 +228,12 @@ void AMyCharacter::HeavyAttack()
 	{
 		if (MyAnimInstance && HeavyMontage)
 		{
-			MyAnimInstance->Montage_Play(HeavyMontage);
+			if (!MyAnimInstance->Montage_IsPlaying(HeavyMontage))
+			{
+				HeavyInc = 0;
+				MyAnimInstance->Montage_Play(HeavyMontage);
+			}
+			else { HeavyInc++; }
 		}
 		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - MyAnimInstance is null.")); }
 		else if (!HeavyMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - HeavyMontage is null.")); }
@@ -279,6 +288,36 @@ void AMyCharacter::StopCameraInterp()
 		GetWorldTimerManager().ClearTimer(CameraInterpTimer);
 	}
 	bInterpInProcess = false;
+}
+
+void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	if (MyAnimInstance)
+	{
+		if (MyAnimInstance->Montage_IsPlaying(HeavyMontage))
+		{
+			if (NotifyName == "End")
+			{
+				if (HeavyInc >= 1)
+				{
+					HeavyInc--;
+					FName CurrentSection = MyAnimInstance->Montage_GetCurrentSection(HeavyMontage);
+					if (CurrentSection == "Heavy_Slash")
+					{
+						MyAnimInstance->Montage_Play(HeavyMontage);
+						MyAnimInstance->Montage_JumpToSection("Heavy_SpinShield", HeavyMontage);
+					}
+					else if (CurrentSection == "Heavy_SpinShield") 
+					{
+						MyAnimInstance->Montage_Play(HeavyMontage);
+						MyAnimInstance->Montage_JumpToSection("Heavy_Overhead", HeavyMontage);
+					}
+				}
+				else { MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); }
+			}
+		}
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

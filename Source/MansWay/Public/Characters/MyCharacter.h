@@ -131,6 +131,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* HeavyMontage{};
+	int32 HeavyInc{};
+
+	UFUNCTION()
+	void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
