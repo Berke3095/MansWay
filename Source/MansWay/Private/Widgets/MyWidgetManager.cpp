@@ -40,7 +40,6 @@ void AMyWidgetManager::WidgetCheck()
 			MyCharacter->SetClosestInteractable(MyCharacter->CalculateClosestOverlap());
 			if (MyCharacter->GetClosestInteractable()->IsA<AMyShield>())
 			{
-				FString ShieldText = "Pick Up Shield";
 				if (PickUpWidget->GetPickUpTextBlock()->GetText().ToString() != ShieldText)
 				{
 					PickUpWidget->SetPickUpText(ShieldText);
@@ -48,7 +47,6 @@ void AMyWidgetManager::WidgetCheck()
 			}
 			else if (MyCharacter->GetClosestInteractable()->IsA<AMySword>())
 			{
-				FString SwordText = "Pick Up Sword";
 				if (PickUpWidget->GetPickUpTextBlock()->GetText().ToString() != SwordText)
 				{
 					PickUpWidget->SetPickUpText(SwordText);

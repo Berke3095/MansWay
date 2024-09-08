@@ -93,7 +93,7 @@ void AMyWeapon::TurnOnPhysics()
 {
 	if (WeaponMesh)
 	{
-		float TimeToTurnOffPhysics{ 5.0f };
+		const float TimeToTurnOffPhysics{ 5.0f };
 		GetWorldTimerManager().SetTimer(TurnOffPhysicsTimer, this, &AMyWeapon::TurnOffPhysics, TimeToTurnOffPhysics, false);
 
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);

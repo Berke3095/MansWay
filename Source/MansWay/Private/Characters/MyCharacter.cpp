@@ -111,13 +111,13 @@ void AMyCharacter::SwitchStanceCamera(float DeltaTime1)
 {
 	if (bInterpInProcess && SpringArm)
 	{
-		FVector CombatStanceOffset = FVector(0.0f, 50.0f, 20.0f);
+		const FVector CombatStanceOffset = FVector(0.0f, 50.0f, 20.0f);
 		FVector SocketToInterp = bCombatStance ? CombatStanceOffset : StartingSocketOffset;
 
 		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, DeltaTime1, 2.0);
 		SpringArm->SocketOffset = InterpolatedSocket;
 
-		float CombatTargetArm = 50.0f;
+		const float CombatTargetArm = 50.0f;
 		float TargetArmToInterp = bCombatStance ? CombatTargetArm : StartingTargetArmLength;
 
 		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, DeltaTime1, 2.0);
@@ -276,7 +276,7 @@ void AMyCharacter::InterpCamera()
 		GetWorldTimerManager().ClearTimer(CameraInterpTimer);
 	}
 
-	float TimeToInterp{ 3.0f };
+	const float TimeToInterp{ 3.0f };
 	GetWorldTimerManager().SetTimer(CameraInterpTimer, this, &AMyCharacter::StopCameraInterp, TimeToInterp, false);
 	bInterpInProcess = true;
 }

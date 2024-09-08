@@ -29,6 +29,9 @@ private:
 
 	AMyCharacter* MyCharacter{};
 
+	const FString ShieldText = "Pick Up Shield";
+	const FString SwordText = "Pick Up Sword";
+
 public:
 	static AMyWidgetManager* GetInstance() { return Instance ? Instance : nullptr; }
 	void CreatePickUpWidget();

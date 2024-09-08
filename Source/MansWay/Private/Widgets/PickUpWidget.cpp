@@ -1,7 +1,7 @@
 #include "Widgets/PickUpWidget.h"
 #include "Components/TextBlock.h" 
 
-void UPickUpWidget::SetPickUpText(FString Text1)
+void UPickUpWidget::SetPickUpText(const FString& Text1)
 {
 	if (PickUpText)
 	{

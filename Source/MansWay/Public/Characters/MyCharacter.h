@@ -33,9 +33,9 @@ private:
 	/*
 		ATTRIBUTES
 	*/
-	float DefaultSpeed{ 250.0f };
-	float CombatSpeed{ 125.0 };
-	float SprintSpeed{ 350.0f };
+	const float DefaultSpeed{ 250.0f };
+	const float CombatSpeed{ 125.0 };
+	const float SprintSpeed{ 350.0f };
 
 	/*
 		REFERENCES
