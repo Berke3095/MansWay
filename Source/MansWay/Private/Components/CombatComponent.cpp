@@ -27,59 +27,59 @@ void UCombatComponent::GetReferences()
 	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::GetReferences - MyCharacter is null.")); }
 }
 
-void UCombatComponent::DropInteractable(AActor* ActorToDrop1)
+void UCombatComponent::DropInteractable(AActor* actorToDrop)
 {
-	if (MyCharacter && ActorToDrop1)
+	if (MyCharacter && actorToDrop)
 	{
-		if (ActorToDrop1->IsAttachedTo(MyCharacter))
+		if (actorToDrop->IsAttachedTo(MyCharacter))
 		{
-			ActorToDrop1->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-			ActorToDrop1->SetOwner(nullptr);
+			actorToDrop->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			actorToDrop->SetOwner(nullptr);
 
-			if (AMyWeapon* DroppedWeapon = Cast<AMyWeapon>(ActorToDrop1)) { DroppedWeapon->SetDroppedSettings(); }
+			if (AMyWeapon* DroppedWeapon = Cast<AMyWeapon>(actorToDrop)) { DroppedWeapon->SetDroppedSettings(); }
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
 		}
 	}
 	else if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - MyCharacter is null.")); }
-	else if (!ActorToDrop1) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - ActorToDrop1 is null.")); }
+	else if (!actorToDrop) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::DropInteractable - actorToDrop is null.")); }
 }
 
-void UCombatComponent::EquipInteractable(AActor* ActorToEquip1)
+void UCombatComponent::EquipInteractable(AActor* actorToEquip)
 {
-	if (MyCharacter && ActorToEquip1)
+	if (MyCharacter && actorToEquip)
 	{
-		if (ActorToEquip1->IsA<AMyShield>())
+		if (actorToEquip->IsA<AMyShield>())
 		{
 			if (EquippedShield) { DropInteractable(EquippedShield); }
 
 			if (const USkeletalMeshSocket* ShieldSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Shield_Socket")))
 			{
-				EquippedShield = Cast<AMyShield>(ActorToEquip1);
+				EquippedShield = Cast<AMyShield>(actorToEquip);
 				EquippedShield->SetOwner(MyCharacter);
 				EquippedShield->SetEquippedSettings();
 
-				ShieldSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
+				ShieldSocket->AttachActor(actorToEquip, MyCharacter->GetMesh());
 			}
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Shield_socket is null.")); }
 		}
-		else if (ActorToEquip1->IsA<AMySword>())
+		else if (actorToEquip->IsA<AMySword>())
 		{
 			if (EquippedWeapon) { DropInteractable(EquippedWeapon); }
 
 			if (const USkeletalMeshSocket* SwordSocket = MyCharacter->GetMesh()->GetSocketByName(FName("Sword_Socket")))
 			{
-				EquippedWeapon = Cast<AMySword>(ActorToEquip1);
+				EquippedWeapon = Cast<AMySword>(actorToEquip);
 				EquippedWeapon->SetOwner(MyCharacter);
 				EquippedWeapon->SetEquippedSettings();
 
-				SwordSocket->AttachActor(ActorToEquip1, MyCharacter->GetMesh());
+				SwordSocket->AttachActor(actorToEquip, MyCharacter->GetMesh());
 			}
 			else { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipInteractable - Axe_socket is null.")); }
 		}
 
-		if (MyCharacter->GetClosestInteractable() == ActorToEquip1) { MyCharacter->SetClosestInteractable(nullptr); }
+		if (MyCharacter->GetClosestInteractable() == actorToEquip) { MyCharacter->SetClosestInteractable(nullptr); }
 	}
 	else if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - MyCharacter is null.")); }
-	else if (!ActorToEquip1) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - ActorToEquip1 is null.")); }
+	else if (!actorToEquip) { UE_LOG(LogTemp, Error, TEXT("UCombatComponent::EquipShield - actorToEquip is null.")); }
 }
 

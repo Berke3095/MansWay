@@ -34,10 +34,10 @@ void AMyCharacter::Tick(float DeltaTime)
 	Movement(DeltaTime);
 }
 
-void AMyCharacter::Movement(float DeltaTime1)
+void AMyCharacter::Movement(float deltaTime)
 {
-	AimOffset(DeltaTime1);
-	SwitchStanceCamera(DeltaTime1);
+	AimOffset(deltaTime);
+	SwitchStanceCamera(deltaTime);
 }
 
 void AMyCharacter::SetupReferences()
@@ -107,28 +107,28 @@ void AMyCharacter::SetupComponents()
 	if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CombatComponent is null.")); }
 }
 
-void AMyCharacter::SwitchStanceCamera(float DeltaTime1)
+void AMyCharacter::SwitchStanceCamera(float deltaTime)
 {
 	if (bInterpInProcess && SpringArm)
 	{
 		const FVector CombatStanceOffset = FVector(0.0f, 50.0f, 20.0f);
 		FVector SocketToInterp = bCombatStance ? CombatStanceOffset : StartingSocketOffset;
 
-		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, DeltaTime1, 2.0);
+		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, deltaTime, 2.0);
 		SpringArm->SocketOffset = InterpolatedSocket;
 
 		const float CombatTargetArm = 50.0f;
 		float TargetArmToInterp = bCombatStance ? CombatTargetArm : StartingTargetArmLength;
 
-		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, DeltaTime1, 2.0);
+		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, deltaTime, 2.0);
 		SpringArm->TargetArmLength = InterpolatedTargetArm;
 	}
 	else if (!Camera) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::CameraMovement - Camera is null.")); }
 }
 
-void AMyCharacter::Move(const FInputActionValue& InputValue1)
+void AMyCharacter::Move(const FInputActionValue& inputValue)
 {
-	const FVector2D Value = InputValue1.Get<FVector2D>();
+	const FVector2D Value = inputValue.Get<FVector2D>();
 
 	if (PlayerController)
 	{
@@ -152,9 +152,9 @@ void AMyCharacter::StopMove()
 	Speed = 0.0f;
 }
 
-void AMyCharacter::Look(const FInputActionValue& InputValue1)
+void AMyCharacter::Look(const FInputActionValue& inputValue)
 {
-	const FVector2D Value = InputValue1.Get<FVector2D>();
+	const FVector2D Value = inputValue.Get<FVector2D>();
 
 	if (PlayerController)
 	{
@@ -240,29 +240,29 @@ void AMyCharacter::HeavyAttack()
 	}
 }
 
-void AMyCharacter::UseControllerYaw(float DeltaTime1)
+void AMyCharacter::UseControllerYaw(float deltaTime)
 {
 	if (CharacterYaw != 0) { CharacterYaw = 0.0f; }
 
 	float InterpTime = bCombatStance ? 10.0f : 3.0f;
 	FRotator TargetActorRotation(0.0f, GetControlRotation().Yaw, 0.0f);
-	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, DeltaTime1, InterpTime);
+	FRotator InterpolatedRotation = FMath::RInterpTo(GetActorRotation(), TargetActorRotation, deltaTime, InterpTime);
 	SetActorRotation(InterpolatedRotation);
 }
 
-void AMyCharacter::AimOffset(float DeltaTime1)
+void AMyCharacter::AimOffset(float deltaTime)
 {
 	FRotator ActorForwardRotation = GetActorForwardVector().Rotation();
 	FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), ActorForwardRotation);
 	if (Speed > 0)
 	{
-		UseControllerYaw(DeltaTime1);
+		UseControllerYaw(deltaTime);
 	}
 	else
 	{
 		if (bCombatStance)
 		{
-			UseControllerYaw(DeltaTime1);
+			UseControllerYaw(deltaTime);
 		}
 		else { CharacterYaw = DeltaRotation.Yaw; }
 	}

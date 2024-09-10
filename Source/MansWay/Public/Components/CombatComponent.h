@@ -25,9 +25,9 @@ private:
 	AMyWeapon* EquippedWeapon{};
 
 	void GetReferences();
-	void DropInteractable(AActor* ActorToDrop1);
+	void DropInteractable(AActor* actorToDrop);
 
 public:
 
-	void EquipInteractable(AActor* ActorToEquip1);
+	void EquipInteractable(AActor* actorToEquip);
 };

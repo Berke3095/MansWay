@@ -28,7 +28,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void Movement(float DeltaTime1);
+	void Movement(float deltaTime);
 
 	/*
 		ATTRIBUTES
@@ -62,7 +62,7 @@ private:
 
 	UCombatComponent* CombatComponent{};
 
-	void SwitchStanceCamera(float DeltaTime1);
+	void SwitchStanceCamera(float deltaTime);
 
 	/*
 		INPUT
@@ -70,9 +70,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* CharacterMappingContext{};
 
-	void Move(const FInputActionValue& InputValue1);
+	void Move(const FInputActionValue& inputValue);
 	void StopMove();
-	void Look(const FInputActionValue& InputValue1);
+	void Look(const FInputActionValue& inputValue);
 	void BasicAttack();
 	void Interact();
 	void StanceSwitch();
@@ -102,14 +102,14 @@ private:
 	UInputAction* HeavyAction{};
 	
 	float Speed{};
-	void UseControllerYaw(float DeltaTime1);
+	void UseControllerYaw(float deltaTime);
 
 	/*
 		OFFSET
 	*/
 	float CharacterYaw{};
 	float CharacterPitch{};
-	void AimOffset(float DeltaTime1);
+	void AimOffset(float deltaTime);
 
 	TArray<AActor*> Overlaps{};
 
@@ -137,7 +137,7 @@ private:
 	void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 private:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 
 public:
 
@@ -146,11 +146,11 @@ public:
 	
 	FORCEINLINE const float GetSpeed() const { return Speed; }
 
-	FORCEINLINE void SetClosestInteractable(AActor* ClosestInteractable1) { ClosestInteractable = ClosestInteractable1; }
+	FORCEINLINE void SetClosestInteractable(AActor* closestInteractable) { ClosestInteractable = closestInteractable; }
 	FORCEINLINE const AActor* GetClosestInteractable() const { return ClosestInteractable ? ClosestInteractable : nullptr; }
 
-	FORCEINLINE void AddToOverlaps(AActor* InteractableToAdd1) { if (!Overlaps.Contains(InteractableToAdd1)) { Overlaps.Add(InteractableToAdd1); } }
-	FORCEINLINE void RemoveFromOverlaps(AActor* InteractableToRemove1) { if (Overlaps.Contains(InteractableToRemove1)) { Overlaps.Remove(InteractableToRemove1); } }
+	FORCEINLINE void AddToOverlaps(AActor* interactableToAdd) { if (!Overlaps.Contains(interactableToAdd)) { Overlaps.Add(interactableToAdd); } }
+	FORCEINLINE void RemoveFromOverlaps(AActor* interactableToRemove) { if (Overlaps.Contains(interactableToRemove)) { Overlaps.Remove(interactableToRemove); } }
 	FORCEINLINE TArray<AActor*> GetOverlappingInteractables() const { return Overlaps; }
 	AActor* CalculateClosestOverlap();
 

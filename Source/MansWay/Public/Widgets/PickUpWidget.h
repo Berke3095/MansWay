@@ -17,6 +17,6 @@ private:
 	UTextBlock* PickUpText{};
 
 public:
-	void SetPickUpText(const FString &Text1);
+	void SetPickUpText(const FString &text);
 	FORCEINLINE const UTextBlock* GetPickUpTextBlock() const { return PickUpText ? PickUpText : nullptr; }
 };
