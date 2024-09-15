@@ -16,7 +16,7 @@ void AMyShield::BeginPlay()
 
 void AMyShield::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
 }
 
 void AMyShield::SetupComponents()
