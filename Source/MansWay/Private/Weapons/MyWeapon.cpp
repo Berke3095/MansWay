@@ -59,6 +59,7 @@ void AMyWeapon::SetupComponents()
 	{
 		RootComponent = WeaponMesh;
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		
 	}
@@ -68,11 +69,9 @@ void AMyWeapon::SetupComponents()
 	if (WeaponBox)
 	{
 		WeaponBox->SetupAttachment(WeaponMesh);
-		WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-		WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnSphereOverlap);
-		WeaponBox->OnComponentEndOverlap.AddDynamic(this, &AMyWeapon::OnSphereEndOverlap);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponBox is null.")); }
 
@@ -81,6 +80,7 @@ void AMyWeapon::SetupComponents()
 	{
 		WeaponSphere->SetupAttachment(WeaponMesh);
 		WeaponSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		WeaponSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 		WeaponSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		WeaponSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnSphereOverlap);
@@ -99,7 +99,6 @@ void AMyWeapon::TurnOnPhysics()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		WeaponMesh->SetSimulatePhysics(true);
-		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // PhysicsTool
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOnPhysics - WeaponMesh is null.")); }
 }
@@ -116,7 +115,6 @@ void AMyWeapon::TurnOffPhysics()
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		// WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::TurnOffPhysics - WeaponMesh is null.")); }
 }
@@ -128,7 +126,7 @@ void AMyWeapon::SetEquippedSettings()
 	if (WeaponSphere)
 	{
 		WeaponSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		WeaponSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponSphere is null.")); }
 
@@ -137,8 +135,10 @@ void AMyWeapon::SetEquippedSettings()
 		WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
 		if (GetOwner()->IsA<AMyCharacter>())
 		{
+			WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap); // Enemy
 		}
+		//(GetOwner()->IsA<AMyEnemy>())
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponBox is null.")); }
 }
@@ -156,8 +156,8 @@ void AMyWeapon::SetDroppedSettings()
 
 	if (WeaponBox)
 	{
+		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponBox is null.")); }
 }

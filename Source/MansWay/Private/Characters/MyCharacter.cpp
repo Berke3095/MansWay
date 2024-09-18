@@ -78,11 +78,10 @@ void AMyCharacter::SetupComponents()
 	MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
-		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3); // Player 
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap); // Weapon
-		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Block); // PhysicsTool
+		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap); // Enemy weapon
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")); }
 
@@ -180,17 +179,20 @@ void AMyCharacter::Interact()
 
 void AMyCharacter::StanceSwitch()
 {
-	if (bCombatStance)
+	if (CombatComponent->CheckWeapons())
 	{
-		bCombatStance = false;
-		GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
-		InterpCamera();
-	}
-	else
-	{
-		bCombatStance = true;
-		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
-		InterpCamera();
+		if (bCombatStance)
+		{
+			bCombatStance = false;
+			GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+			InterpCamera();
+		}
+		else
+		{
+			bCombatStance = true;
+			GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
+			InterpCamera();
+		}
 	}
 }
 

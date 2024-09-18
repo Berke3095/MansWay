@@ -30,4 +30,5 @@ private:
 public:
 
 	void EquipInteractable(AActor* actorToEquip);
+	FORCEINLINE bool CheckWeapons() { return EquippedWeapon && EquippedShield ? true : false; }
 };
