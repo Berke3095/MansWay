@@ -165,7 +165,20 @@ void AMyCharacter::Look(const FInputActionValue& inputValue)
 
 void AMyCharacter::BasicAttack()
 {
-
+	if (bCombatStance)
+	{
+		if (MyAnimInstance && LightMontage)
+		{
+			if (!MyAnimInstance->Montage_IsPlaying(LightMontage))
+			{
+				LightInc = 0;
+				MyAnimInstance->Montage_Play(LightMontage);
+			}
+			else { LightInc++; }
+		}
+		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::BasicAttack - MyAnimInstance is null.")); }
+		else if (!LightMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::BasicAttack - LightMontage is null.")); }
+	}
 }
 
 void AMyCharacter::Interact()
@@ -318,6 +331,28 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				else { MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); }
 			}
 		}
+		else if (MyAnimInstance->Montage_IsPlaying(LightMontage))
+		{
+			if (NotifyName == "End")
+			{
+				if (LightInc >= 1)
+				{
+					LightInc--;
+					FName CurrentSection = MyAnimInstance->Montage_GetCurrentSection(LightMontage);
+					if (CurrentSection == "Light_Stab")
+					{
+						MyAnimInstance->Montage_Play(LightMontage);
+						MyAnimInstance->Montage_JumpToSection("Light_LeftToRight", LightMontage);
+					}
+					else if (CurrentSection == "Light_LeftToRight")
+					{
+						MyAnimInstance->Montage_Play(LightMontage);
+						MyAnimInstance->Montage_JumpToSection("Light_Overhead", LightMontage);
+					}
+				}
+				else { MyAnimInstance->Montage_Stop(1.0f, LightMontage); }
+			}
+		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
 }
@@ -343,7 +378,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		if (BasicAttackAction)
 		{
-			EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Triggered, this, &AMyCharacter::BasicAttack);
+			EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Started, this, &AMyCharacter::BasicAttack);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - BasicAttackAction is null.")); }
 

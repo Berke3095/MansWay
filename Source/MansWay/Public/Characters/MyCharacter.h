@@ -133,6 +133,10 @@ private:
 	UAnimMontage* HeavyMontage{};
 	int32 HeavyInc{};
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* LightMontage{};
+	int32 LightInc{};
+
 	UFUNCTION()
 	void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
