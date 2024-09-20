@@ -35,15 +35,13 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	Movement(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("x: %f, y: %f, z: %f"), GetActorRotation().Pitch, GetActorRotation().Yaw, GetActorRotation().Roll);
-
 	if (LockedEnemy)
 	{
 		FVector enemyLocation = LockedEnemy->GetActorLocation();
 		FVector actorLoc = GetActorLocation();
-		FVector DirToEnemy = (enemyLocation - actorLoc).GetSafeNormal();
+		FVector dirToEnemy = (enemyLocation - actorLoc).GetSafeNormal();
 
-		FRotator targetRot = DirToEnemy.Rotation();
+		FRotator targetRot = dirToEnemy.Rotation();
 		
 		if (PlayerController)
 		{
@@ -51,6 +49,13 @@ void AMyCharacter::Tick(float DeltaTime)
 			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, DeltaTime, 5.0f);
 			PlayerController->SetControlRotation(newRot);
 		}
+
+		float distance = FVector::Dist(enemyLocation, actorLoc);
+		if (distance < 75.0f && CombatState != ECombatState::ECS_NONE)
+		{
+			if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_None) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); }
+		}
+		else { if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); } }
 	}
 }
 
@@ -92,7 +97,6 @@ void AMyCharacter::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap); // Weapon
-		CapsuleComponent->OnComponentHit.AddDynamic(this, &AMyCharacter::OnCapsuleHit);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")); }
 
@@ -103,6 +107,7 @@ void AMyCharacter::SetupComponents()
 		MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3); // Player 
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap); // Enemy weapon
+		MeshComponent->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")); }
 
@@ -134,6 +139,7 @@ void AMyCharacter::SetupComponents()
 		AreaTrace->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // EnemyTargeter
 		AreaTrace->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		AreaTrace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); // Enemy
+		AreaTrace->bUseAttachParentBound = true;
 		AreaTrace->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnAreaTraceOverlap);
 		AreaTrace->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnAreaTraceEndOverlap);
 	}
@@ -176,7 +182,11 @@ void AMyCharacter::OnAreaTraceEndOverlap(UPrimitiveComponent* OverlappedComponen
 		if (EnemiesAround.Contains(enemy))
 		{
 			EnemiesAround.Remove(enemy);
-			if (EnemiesAround.Num() == 0) { LockedEnemy = nullptr; }
+			if (EnemiesAround.Num() == 0) 
+			{ 
+				LockedEnemy = nullptr; 
+				if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
+			}
 		}
 	}
 }
@@ -423,13 +433,11 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				{ 
 					MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); 
 					CombatState = ECombatState::ECS_NONE;
-					if(GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 				}
 			}
 			else if (NotifyName == "Reset") 
 			{ 
 				CombatState = ECombatState::ECS_NONE; 
-				if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 			}
 		}
 		else if (MyAnimInstance->Montage_IsPlaying(LightMontage))
@@ -455,13 +463,11 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				{ 
 					MyAnimInstance->Montage_Stop(0.5f, LightMontage);
 					CombatState = ECombatState::ECS_NONE;
-					if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 				}
 			}
 			else if (NotifyName == "Reset") 
 			{ 
 				CombatState = ECombatState::ECS_NONE; 
-				if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 			}
 		}
 		else if (MyAnimInstance->Montage_IsPlaying(ParryMontage))
@@ -469,19 +475,10 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 			if (NotifyName == "Reset") 
 			{ 
 				CombatState = ECombatState::ECS_NONE; 
-				if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 			}
 		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
-}
-
-void AMyCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (CombatState != ECombatState::ECS_NONE && OtherActor->IsA<AMyEnemy>())
-	{
-		if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_None) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); }
-	}
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
