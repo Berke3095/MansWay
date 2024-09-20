@@ -9,6 +9,8 @@
 #include "Components/CombatComponent.h"
 #include "Animations/MyAnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Components/SphereComponent.h"
+#include "Enemy/MyEnemy.h"
 
 
 AMyCharacter::AMyCharacter()
@@ -32,6 +34,25 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	Movement(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("x: %f, y: %f, z: %f"), GetActorRotation().Pitch, GetActorRotation().Yaw, GetActorRotation().Roll);
+
+	if (LockedEnemy)
+	{
+		FVector enemyLocation = LockedEnemy->GetActorLocation();
+		FVector actorLoc = GetActorLocation();
+		FVector DirToEnemy = (enemyLocation - actorLoc).GetSafeNormal();
+
+		FRotator targetRot = DirToEnemy.Rotation();
+		
+		if (PlayerController)
+		{
+			targetRot.Yaw -= 10.0f;
+			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, DeltaTime, 5.0f);
+			PlayerController->SetControlRotation(newRot);
+		}
+
+	}
 }
 
 void AMyCharacter::Movement(float deltaTime)
@@ -104,6 +125,18 @@ void AMyCharacter::SetupComponents()
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CombatComponent is null.")); }
+
+	AreaTrace = CreateDefaultSubobject<USphereComponent>(TEXT("AreaTrace"));
+	if(AreaTrace)
+	{
+		AreaTrace->SetupAttachment(RootComponent);
+		AreaTrace->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AreaTrace->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // EnemyTargeter
+		AreaTrace->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaTrace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); // Enemy
+		AreaTrace->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnAreaTraceOverlap);
+		AreaTrace->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnAreaTraceEndOverlap);
+	}
 }
 
 void AMyCharacter::SwitchStanceCamera(float deltaTime)
@@ -123,6 +156,47 @@ void AMyCharacter::SwitchStanceCamera(float deltaTime)
 		SpringArm->TargetArmLength = InterpolatedTargetArm;
 	}
 	else if (!Camera) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::CameraMovement - Camera is null.")); }
+}
+
+void AMyCharacter::OnAreaTraceOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA<AMyEnemy>())
+	{
+		AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor);
+		EnemiesAround.AddUnique(enemy);
+		if (bCombatStance) { LockOnEnemy(); }
+	}
+}
+
+void AMyCharacter::OnAreaTraceEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor->IsA<AMyEnemy>())
+	{
+		AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor);
+		if (EnemiesAround.Contains(enemy))
+		{
+			EnemiesAround.Remove(enemy);
+			if (EnemiesAround.Num() == 0) { LockedEnemy = nullptr; }
+		}
+	}
+}
+
+void AMyCharacter::LockOnEnemy()
+{
+	AMyEnemy* ClosestEnemy = nullptr;
+	float MinDistance = FLT_MAX;
+	for (AMyEnemy* Enemy : EnemiesAround)
+	{
+		float Distance = FVector::Dist(GetActorLocation(), Enemy->GetActorLocation());
+
+		if (Distance < MinDistance)
+		{
+			MinDistance = Distance;
+			ClosestEnemy = Enemy;
+		}
+	}
+
+	LockedEnemy = ClosestEnemy;
 }
 
 void AMyCharacter::Move(const FInputActionValue& inputValue)
@@ -153,19 +227,22 @@ void AMyCharacter::StopMove()
 
 void AMyCharacter::Look(const FInputActionValue& inputValue)
 {
-	const FVector2D Value = inputValue.Get<FVector2D>();
-
-	if (PlayerController)
+	if (!LockedEnemy)
 	{
-		AddControllerYawInput(Value.X);
-		AddControllerPitchInput(Value.Y);
+		const FVector2D Value = inputValue.Get<FVector2D>();
+
+		if (PlayerController)
+		{
+			AddControllerYawInput(Value.X);
+			AddControllerPitchInput(Value.Y);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Look - PlayerController is null.")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Look - PlayerController is null.")); }
 }
 
 void AMyCharacter::BasicAttack()
 {
-	if (bCombatStance && (combatState == ECombatState::ECS_NONE || combatState == ECombatState::ECS_BasicAttacking))
+	if (bCombatStance && (CombatState == ECombatState::ECS_NONE || CombatState == ECombatState::ECS_BasicAttacking))
 	{
 		if (MyAnimInstance && LightMontage)
 		{
@@ -173,7 +250,7 @@ void AMyCharacter::BasicAttack()
 			{
 				LightInc = 0;
 				MyAnimInstance->Montage_Play(LightMontage);
-				combatState = ECombatState::ECS_BasicAttacking;
+				CombatState = ECombatState::ECS_BasicAttacking;
 			}
 			else { LightInc++; }
 		}
@@ -200,12 +277,14 @@ void AMyCharacter::StanceSwitch()
 			bCombatStance = false;
 			GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 			InterpCamera();
+			if (LockedEnemy) { LockedEnemy = nullptr; }
 		}
 		else
 		{
 			bCombatStance = true;
 			GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 			InterpCamera();
+			if (EnemiesAround.Num() > 0) { LockOnEnemy(); }
 		}
 	}
 }
@@ -218,7 +297,7 @@ void AMyCharacter::Parry()
 		{
 			bCanParry = false;
 			MyAnimInstance->Montage_Play(ParryMontage);
-			combatState = ECombatState::ECS_Parrying;
+			CombatState = ECombatState::ECS_Parrying;
 
 			float ParryResetTime{ 3.0f };
 			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, ParryResetTime, false);
@@ -239,7 +318,7 @@ void AMyCharacter::ResetParry()
 
 void AMyCharacter::HeavyAttack()
 {
-	if (bCombatStance && (combatState == ECombatState::ECS_NONE || combatState == ECombatState::ECS_HeavyAttacking))
+	if (bCombatStance && (CombatState == ECombatState::ECS_NONE || CombatState == ECombatState::ECS_HeavyAttacking))
 	{
 		if (MyAnimInstance && HeavyMontage)
 		{
@@ -247,13 +326,23 @@ void AMyCharacter::HeavyAttack()
 			{
 				HeavyInc = 0;
 				MyAnimInstance->Montage_Play(HeavyMontage);
-				combatState = ECombatState::ECS_HeavyAttacking;
+				CombatState = ECombatState::ECS_HeavyAttacking;
 			}
 			else { HeavyInc++; }
 		}
 		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - MyAnimInstance is null.")); }
 		else if (!HeavyMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::HeavyAttack - HeavyMontage is null.")); }
 	}
+}
+
+void AMyCharacter::LockLeft()
+{
+
+}
+
+void AMyCharacter::LockRight()
+{
+
 }
 
 void AMyCharacter::UseControllerYaw(float deltaTime)
@@ -332,10 +421,10 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				else 
 				{ 
 					MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); 
-					combatState = ECombatState::ECS_NONE;
+					CombatState = ECombatState::ECS_NONE;
 				}
 			}
-			else if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
+			else if (NotifyName == "Reset") { CombatState = ECombatState::ECS_NONE; }
 		}
 		else if (MyAnimInstance->Montage_IsPlaying(LightMontage))
 		{
@@ -359,14 +448,14 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				else 
 				{ 
 					MyAnimInstance->Montage_Stop(0.5f, LightMontage);
-					combatState = ECombatState::ECS_NONE;
+					CombatState = ECombatState::ECS_NONE;
 				}
 			}
-			else if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
+			else if (NotifyName == "Reset") { CombatState = ECombatState::ECS_NONE; }
 		}
 		else if (MyAnimInstance->Montage_IsPlaying(ParryMontage))
 		{
-			if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
+			if (NotifyName == "Reset") { CombatState = ECombatState::ECS_NONE; }
 		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
@@ -375,6 +464,14 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &AMyCharacter::BasicAttack);
+	PlayerInputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &AMyCharacter::HeavyAttack);
+	PlayerInputComponent->BindKey(EKeys::F, IE_Pressed, this, &AMyCharacter::Interact);
+	PlayerInputComponent->BindKey(EKeys::LeftControl, IE_Pressed, this, &AMyCharacter::StanceSwitch);
+	PlayerInputComponent->BindKey(EKeys::LeftAlt, IE_Pressed, this, &AMyCharacter::Parry);
+	PlayerInputComponent->BindKey(EKeys::Q, IE_Pressed, this, &AMyCharacter::LockLeft);
+	PlayerInputComponent->BindKey(EKeys::E, IE_Pressed, this, &AMyCharacter::LockRight);
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -390,36 +487,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - LookAction is null.")); }
-
-		if (BasicAttackAction)
-		{
-			EnhancedInputComponent->BindAction(BasicAttackAction, ETriggerEvent::Started, this, &AMyCharacter::BasicAttack);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - BasicAttackAction is null.")); }
-
-		if (InteractAction)
-		{
-			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AMyCharacter::Interact);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - InteractAction is null.")); }
-
-		if (StanceSwitchAction)
-		{
-			EnhancedInputComponent->BindAction(StanceSwitchAction, ETriggerEvent::Started, this, &AMyCharacter::StanceSwitch);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - StanceSwitchAction is null.")); }
-
-		if (ParryAction)
-		{
-			EnhancedInputComponent->BindAction(ParryAction, ETriggerEvent::Started, this, &AMyCharacter::Parry);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - ParryAction is null.")); }
-
-		if (HeavyAction)
-		{
-			EnhancedInputComponent->BindAction(HeavyAction, ETriggerEvent::Started, this, &AMyCharacter::HeavyAttack);
-		}
-		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - ParryAction is null.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupPlayerInputComponent - EnhancedInputComponent is null.")); }
 }

@@ -12,8 +12,10 @@ class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
+class USphereComponent;
 class UMyAnimInstance;
 class UAnimMontage;
+class AMyEnemy;
 
 
 UCLASS()
@@ -33,7 +35,7 @@ private:
 	/*
 		ENUMS
 	*/
-	ECombatState combatState{ ECombatState::ECS_NONE };
+	ECombatState CombatState{ ECombatState::ECS_NONE };
 
 	/*
 		ATTRIBUTES
@@ -69,6 +71,17 @@ private:
 
 	void SwitchStanceCamera(float deltaTime);
 
+	UPROPERTY(EditDefaultsOnly)
+	USphereComponent* AreaTrace{};
+	UFUNCTION()
+	void OnAreaTraceOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnAreaTraceEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void LockOnEnemy();
+	AMyEnemy* LockedEnemy{};
+	TArray<AMyEnemy*> EnemiesAround{};
+
 	/*
 		INPUT
 	*/
@@ -84,27 +97,14 @@ private:
 	void Parry();
 	void ResetParry();
 	void HeavyAttack();
+	void LockLeft();
+	void LockRight();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction{};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookAction{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* BasicAttackAction{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* InteractAction{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* StanceSwitchAction{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* ParryAction{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* HeavyAction{};
 	
 	float Speed{};
 	void UseControllerYaw(float deltaTime);
@@ -145,7 +145,6 @@ private:
 	UFUNCTION()
 	void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
-private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* playerInputComponent) override;
 
 public:
