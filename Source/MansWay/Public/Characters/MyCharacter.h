@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Enums/MyCharacterEnums.h"
 #include "MyCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 class UCapsuleComponent;
-class USkeletalMeshComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCombatComponent;
@@ -29,6 +29,11 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	void Movement(float deltaTime);
+
+	/*
+		ENUMS
+	*/
+	ECombatState combatState{ ECombatState::ECS_NONE };
 
 	/*
 		ATTRIBUTES

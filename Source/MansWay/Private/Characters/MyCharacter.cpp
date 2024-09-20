@@ -165,7 +165,7 @@ void AMyCharacter::Look(const FInputActionValue& inputValue)
 
 void AMyCharacter::BasicAttack()
 {
-	if (bCombatStance)
+	if (bCombatStance && (combatState == ECombatState::ECS_NONE || combatState == ECombatState::ECS_BasicAttacking))
 	{
 		if (MyAnimInstance && LightMontage)
 		{
@@ -173,6 +173,7 @@ void AMyCharacter::BasicAttack()
 			{
 				LightInc = 0;
 				MyAnimInstance->Montage_Play(LightMontage);
+				combatState = ECombatState::ECS_BasicAttacking;
 			}
 			else { LightInc++; }
 		}
@@ -217,6 +218,7 @@ void AMyCharacter::Parry()
 		{
 			bCanParry = false;
 			MyAnimInstance->Montage_Play(ParryMontage);
+			combatState = ECombatState::ECS_Parrying;
 
 			float ParryResetTime{ 3.0f };
 			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, ParryResetTime, false);
@@ -233,13 +235,11 @@ void AMyCharacter::ResetParry()
 		GetWorldTimerManager().ClearTimer(ParryResetTimer);
 	}
 	bCanParry = true;
-
-	UE_LOG(LogTemp, Error, TEXT("Timer resetted"));
 }
 
 void AMyCharacter::HeavyAttack()
 {
-	if (bCombatStance)
+	if (bCombatStance && (combatState == ECombatState::ECS_NONE || combatState == ECombatState::ECS_HeavyAttacking))
 	{
 		if (MyAnimInstance && HeavyMontage)
 		{
@@ -247,6 +247,7 @@ void AMyCharacter::HeavyAttack()
 			{
 				HeavyInc = 0;
 				MyAnimInstance->Montage_Play(HeavyMontage);
+				combatState = ECombatState::ECS_HeavyAttacking;
 			}
 			else { HeavyInc++; }
 		}
@@ -328,8 +329,13 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 						MyAnimInstance->Montage_JumpToSection("Heavy_Overhead", HeavyMontage);
 					}
 				}
-				else { MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); }
+				else 
+				{ 
+					MyAnimInstance->Montage_Stop(1.0f, HeavyMontage); 
+					combatState = ECombatState::ECS_NONE;
+				}
 			}
+			else if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
 		}
 		else if (MyAnimInstance->Montage_IsPlaying(LightMontage))
 		{
@@ -350,8 +356,17 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 						MyAnimInstance->Montage_JumpToSection("Light_Overhead", LightMontage);
 					}
 				}
-				else { MyAnimInstance->Montage_Stop(1.0f, LightMontage); }
+				else 
+				{ 
+					MyAnimInstance->Montage_Stop(0.5f, LightMontage);
+					combatState = ECombatState::ECS_NONE;
+				}
 			}
+			else if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
+		}
+		else if (MyAnimInstance->Montage_IsPlaying(ParryMontage))
+		{
+			if (NotifyName == "Reset") { combatState = ECombatState::ECS_NONE; }
 		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
