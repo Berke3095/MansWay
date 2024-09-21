@@ -1,18 +1,26 @@
 #include "Enemy/MyEnemy.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Controllers/MyAIController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Characters/MyCharacter.h"
 
 AMyEnemy::AMyEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	bUseControllerRotationYaw = false;
+
+	AIControllerClass = AMyAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	SetupComponents();
 }
 
 void AMyEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetupReferences();
 }
 
 void AMyEnemy::Tick(float DeltaTime)
@@ -21,9 +29,18 @@ void AMyEnemy::Tick(float DeltaTime)
 
 }
 
+void AMyEnemy::SetupReferences()
+{
+	MyAIController = Cast<AMyAIController>(GetController());
+	if (!MyAIController) { UE_LOG(LogTemp, Warning, TEXT("AMyEnemy::SetupReferences - MyAIController is null")); }
+
+	MyCharacter = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if(!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("AMyEnemy::SetupReferences - MyCharacter is null")); }
+}
+
 void AMyEnemy::SetupComponents()
 {
-	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	CapsuleComponent = GetCapsuleComponent();
 	if (CapsuleComponent)
 	{
 		RootComponent = CapsuleComponent;
@@ -37,7 +54,7 @@ void AMyEnemy::SetupComponents()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - CapsuleComponent is null.")); }
 
-	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
 		MeshComponent->SetupAttachment(RootComponent);
@@ -48,11 +65,4 @@ void AMyEnemy::SetupComponents()
 		MeshComponent->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - MeshComponent is null.")); }
-
-	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-	if (ArrowComponent) 
-	{ 
-		ArrowComponent->SetupAttachment(RootComponent); 
-		ArrowComponent->bHiddenInGame = true;
-	}
 }
