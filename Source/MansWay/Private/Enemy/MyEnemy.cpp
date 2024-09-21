@@ -4,10 +4,11 @@
 #include "Controllers/MyAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/MyCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AMyEnemy::AMyEnemy()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationYaw = false;
 
@@ -27,15 +28,16 @@ void AMyEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	AimOffset(DeltaTime);
 }
 
 void AMyEnemy::SetupReferences()
 {
 	MyAIController = Cast<AMyAIController>(GetController());
-	if (!MyAIController) { UE_LOG(LogTemp, Warning, TEXT("AMyEnemy::SetupReferences - MyAIController is null")); }
+	if (!MyAIController) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupReferences - MyAIController is null")); }
 
 	MyCharacter = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if(!MyCharacter) { UE_LOG(LogTemp, Warning, TEXT("AMyEnemy::SetupReferences - MyCharacter is null")); }
+	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupReferences - MyCharacter is null")); }
 }
 
 void AMyEnemy::SetupComponents()
@@ -65,4 +67,26 @@ void AMyEnemy::SetupComponents()
 		MeshComponent->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - MeshComponent is null.")); }
+}
+
+void AMyEnemy::AimOffset(float deltaTime)
+{
+	if (MyCharacter && MyCharacter->GetMesh())
+	{
+		FVector characterHeadLocation = MyCharacter->GetMesh()->GetBoneLocation("head");
+		FVector enemyHeadLocation = MeshComponent->GetBoneLocation("head");
+
+		FVector directionToPlayer = (characterHeadLocation - enemyHeadLocation).GetSafeNormal();
+		FRotator aimRotation = directionToPlayer.Rotation();
+		FRotator deltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(aimRotation, GetActorRotation());
+
+		EnemyYaw = deltaRotation.Yaw;
+		EnemyPitch = deltaRotation.Pitch;
+
+		/*if (FMath::Abs(deltaRotation.Yaw) > YawLimit)
+		{
+			FRotator interptRot = FMath::RInterpTo(GetActorRotation(), aimRotation, deltaTime, 5.0f);
+			SetActorRotation(interptRot);
+		}*/
+	}
 }

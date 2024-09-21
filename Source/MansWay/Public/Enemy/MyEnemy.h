@@ -42,4 +42,26 @@ private:
 	UCapsuleComponent* CapsuleComponent{};
 	USkeletalMeshComponent* MeshComponent{};
 
+	/*
+		OFFSET
+	*/
+	float EnemyYaw{};
+	float EnemyPitch{};
+
+	void AimOffset(float deltaTime);
+
+protected:
+	float YawLimit{};
+	float PitchLimit{};
+
+	/*
+		ATTRIBS
+	*/
+	float DefaultSpeed{};
+	
+
+public:
+	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
+	FORCEINLINE const float GetEnemyPitch() const { return EnemyPitch; }
+
 };

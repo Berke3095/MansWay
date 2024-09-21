@@ -6,7 +6,7 @@
 
 AMyWeapon::AMyWeapon()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SetupComponents();
 }

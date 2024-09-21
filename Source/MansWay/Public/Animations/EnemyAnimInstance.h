@@ -4,6 +4,8 @@
 #include "Animation/AnimInstance.h"
 #include "EnemyAnimInstance.generated.h"
 
+class AMyEnemy;
+
 UCLASS()
 class MANSWAY_API UEnemyAnimInstance : public UAnimInstance
 {
@@ -12,5 +14,12 @@ class MANSWAY_API UEnemyAnimInstance : public UAnimInstance
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
-	
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float EnemyPitch{};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float EnemyYaw{};
+
+	AMyEnemy* Enemy{};
 };
