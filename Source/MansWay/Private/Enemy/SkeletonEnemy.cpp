@@ -27,6 +27,4 @@ void ASkeletonEnemy::Tick(float DeltaTime)
 	{
 		MyAIController->MoveToActor(MyCharacter, 50.0f);
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Yaw: %f, Pitch: %f"), GetEnemyYaw(), GetEnemyPitch());
 }

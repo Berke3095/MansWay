@@ -31,6 +31,7 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	void Movement(float deltaTime);
+	void LockEnemy(float deltaTime);
 
 	/*
 		ENUMS

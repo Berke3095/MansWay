@@ -49,6 +49,8 @@ private:
 	float EnemyPitch{};
 
 	void AimOffset(float deltaTime);
+	bool bIsInterping{};
+	float EnemySpeed{};
 
 protected:
 	float YawLimit{};
@@ -63,5 +65,6 @@ protected:
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
 	FORCEINLINE const float GetEnemyPitch() const { return EnemyPitch; }
+	FORCEINLINE const float GetEnemySpeed() const { return EnemySpeed; }
 
 };

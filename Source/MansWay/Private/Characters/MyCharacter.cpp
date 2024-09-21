@@ -34,7 +34,17 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	Movement(DeltaTime);
+	LockEnemy(DeltaTime);
+}
 
+void AMyCharacter::Movement(float deltaTime)
+{
+	AimOffset(deltaTime);
+	SwitchStanceCamera(deltaTime);
+}
+
+void AMyCharacter::LockEnemy(float deltaTime)
+{
 	if (LockedEnemy)
 	{
 		FVector enemyLocation = LockedEnemy->GetActorLocation();
@@ -42,11 +52,11 @@ void AMyCharacter::Tick(float DeltaTime)
 		FVector dirToEnemy = (enemyLocation - actorLoc).GetSafeNormal();
 
 		FRotator targetRot = dirToEnemy.Rotation();
-		
+
 		if (PlayerController)
 		{
 			targetRot.Yaw -= 10.0f;
-			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, DeltaTime, 5.0f);
+			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, deltaTime, 5.0f);
 			PlayerController->SetControlRotation(newRot);
 		}
 
@@ -57,12 +67,6 @@ void AMyCharacter::Tick(float DeltaTime)
 		}
 		else { if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); } }
 	}
-}
-
-void AMyCharacter::Movement(float deltaTime)
-{
-	AimOffset(deltaTime);
-	SwitchStanceCamera(deltaTime);
 }
 
 void AMyCharacter::SetupReferences()

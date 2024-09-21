@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Characters/MyCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AMyEnemy::AMyEnemy()
 {
@@ -78,15 +79,25 @@ void AMyEnemy::AimOffset(float deltaTime)
 
 		FVector directionToPlayer = (characterHeadLocation - enemyHeadLocation).GetSafeNormal();
 		FRotator aimRotation = directionToPlayer.Rotation();
-		FRotator deltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(aimRotation, GetActorRotation());
+
+		FRotator currentRotation = GetActorRotation();
+		FRotator deltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(aimRotation, currentRotation);
+
+		EnemySpeed = UKismetMathLibrary::VSizeXY(GetCharacterMovement()->Velocity);
+		if (EnemySpeed < KINDA_SMALL_NUMBER)
+		{
+			if (FMath::Abs(deltaRotation.Yaw) > YawLimit || bIsInterping)
+			{
+				FRotator interpolatedRotation = FMath::RInterpTo(currentRotation, aimRotation, deltaTime, 2.0f);
+				SetActorRotation(interpolatedRotation);
+
+				deltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(aimRotation, interpolatedRotation);
+
+				bIsInterping = !deltaRotation.IsNearlyZero(30.0f);
+			}
+		}
 
 		EnemyYaw = deltaRotation.Yaw;
 		EnemyPitch = deltaRotation.Pitch;
-
-		/*if (FMath::Abs(deltaRotation.Yaw) > YawLimit)
-		{
-			FRotator interptRot = FMath::RInterpTo(GetActorRotation(), aimRotation, deltaTime, 5.0f);
-			SetActorRotation(interptRot);
-		}*/
 	}
 }
