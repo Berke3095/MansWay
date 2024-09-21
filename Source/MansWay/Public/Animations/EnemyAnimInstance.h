@@ -21,5 +21,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float EnemyYaw{};
 
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float EnemySpeed{};
+
 	AMyEnemy* Enemy{};
 };

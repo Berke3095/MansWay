@@ -1,5 +1,7 @@
 #include "Animations/EnemyAnimInstance.h"
 #include "Enemy/MyEnemy.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void UEnemyAnimInstance::NativeInitializeAnimation()
 {
@@ -15,6 +17,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	if (Enemy)
 	{
+		EnemySpeed = UKismetMathLibrary::VSizeXY(Enemy->GetCharacterMovement()->Velocity);
 		EnemyYaw = Enemy->GetEnemyYaw();
 		EnemyPitch = Enemy->GetEnemyPitch();
 	}
