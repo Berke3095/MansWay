@@ -1,15 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/BaseCombatComponent.h"
 #include "CombatComponent.generated.h"
 
-class AMyShield;
-class AMyWeapon;
 class AMyCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MANSWAY_API UCombatComponent : public UActorComponent
+class MANSWAY_API UCombatComponent : public UBaseCombatComponent
 {
 	GENERATED_BODY()
 
@@ -20,15 +18,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;	
 
+	void SetupReferences();
+
 	AMyCharacter* MyCharacter{};
-	AMyShield* EquippedShield{};
-	AMyWeapon* EquippedWeapon{};
-
-	void GetReferences();
-	void DropInteractable(AActor* actorToDrop);
-
-public:
-
-	void EquipInteractable(AActor* actorToEquip);
-	FORCEINLINE bool CheckWeapons() { return EquippedWeapon && EquippedShield ? true : false; }
 };

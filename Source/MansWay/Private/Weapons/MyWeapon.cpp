@@ -3,6 +3,7 @@
 #include "Components/SphereComponent.h"
 #include "Characters/MyCharacter.h"
 #include "Widgets/MyWidgetManager.h"
+#include "Enemy/MyEnemy.h"
 
 AMyWeapon::AMyWeapon()
 {
@@ -59,7 +60,7 @@ void AMyWeapon::SetupComponents()
 	{
 		RootComponent = WeaponMesh;
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
+		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		
 	}
@@ -70,7 +71,7 @@ void AMyWeapon::SetupComponents()
 	{
 		WeaponBox->SetupAttachment(WeaponMesh);
 		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
+		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponBox is null.")); }
@@ -80,7 +81,7 @@ void AMyWeapon::SetupComponents()
 	{
 		WeaponSphere->SetupAttachment(WeaponMesh);
 		WeaponSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		WeaponSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
+		WeaponSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		WeaponSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnSphereOverlap);
@@ -138,7 +139,12 @@ void AMyWeapon::SetEquippedSettings()
 			WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
 			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap); // Enemy
 		}
-		//(GetOwner()->IsA<AMyEnemy>())
+		else if(GetOwner()->IsA<AMyEnemy>())
+		{
+			WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2); // Weapon
+			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // Player
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("Weapon equipped by unknown owner.")); }
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetEquippedSettings - WeaponBox is null.")); }
 }
@@ -156,7 +162,7 @@ void AMyWeapon::SetDroppedSettings()
 
 	if (WeaponBox)
 	{
-		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Weapon
+		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponBox is null.")); }

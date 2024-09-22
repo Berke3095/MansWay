@@ -55,17 +55,10 @@ void AMyCharacter::LockEnemy(float deltaTime)
 
 		if (PlayerController)
 		{
-			targetRot.Yaw -= 10.0f;
+			targetRot.Yaw -= 20.0f;
 			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, deltaTime, 5.0f);
 			PlayerController->SetControlRotation(newRot);
 		}
-
-		float distance = FVector::Dist(enemyLocation, actorLoc);
-		if (distance < 75.0f && CombatState != ECombatState::ECS_NONE)
-		{
-			if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_None) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None); }
-		}
-		else { if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); } }
 	}
 }
 
@@ -100,7 +93,7 @@ void AMyCharacter::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap); // Weapon
+		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Overlap); // NeutralItem
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")); }
 
@@ -189,7 +182,6 @@ void AMyCharacter::OnAreaTraceEndOverlap(UPrimitiveComponent* OverlappedComponen
 			if (EnemiesAround.Num() == 0) 
 			{ 
 				LockedEnemy = nullptr; 
-				if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 			}
 		}
 	}
@@ -277,7 +269,7 @@ void AMyCharacter::Interact()
 {
 	if (CombatComponent && ClosestInteractable)
 	{
-		CombatComponent->EquipInteractable(ClosestInteractable);
+		CombatComponent->EquipInteractable(this, ClosestInteractable);
 	}
 	else if (!CombatComponent) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Interact - CombatComponent is null.")); }
 }
@@ -292,7 +284,6 @@ void AMyCharacter::StanceSwitch()
 			GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 			InterpCamera();
 			if (LockedEnemy) { LockedEnemy = nullptr; }
-			if (GetCharacterMovement()->MovementMode != EMovementMode::MOVE_Walking) { GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); }
 		}
 		else
 		{

@@ -77,7 +77,7 @@ void AMyWidgetManager::RemovePickUpWidget()
 {
 	if (PickUpWidget)
 	{
-		PickUpWidget->RemoveFromViewport();
+		PickUpWidget->RemoveFromParent();
 		PickUpWidget = nullptr;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWidgetManager::RemovePickUpWidget - PickUpWidget is null.")); }

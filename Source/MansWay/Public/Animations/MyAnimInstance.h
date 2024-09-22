@@ -7,11 +7,14 @@
 class AMyCharacter;
 class UCharacterMovementComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class MANSWAY_API UMyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual ~UMyAnimInstance() {}
+
 private:
 
 	virtual void NativeInitializeAnimation() override;

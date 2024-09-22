@@ -7,8 +7,9 @@
 class UCapsuleComponent;
 class AMyAIController;
 class AMyCharacter;
+class UEnemyCombatComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class MANSWAY_API AMyEnemy : public ACharacter
 {
 	GENERATED_BODY()
@@ -41,6 +42,7 @@ private:
 
 	UCapsuleComponent* CapsuleComponent{};
 	USkeletalMeshComponent* MeshComponent{};
+	UEnemyCombatComponent* CombatComponent{};
 
 	/*
 		OFFSET

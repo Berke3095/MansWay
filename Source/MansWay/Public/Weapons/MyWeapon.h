@@ -9,13 +9,14 @@ class USphereComponent;
 class AMyCharacter;
 class AMyWidgetManager;
 
-UCLASS()
+UCLASS(Abstract)
 class MANSWAY_API AMyWeapon : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	AMyWeapon();
+	virtual ~AMyWeapon() {}
 
 protected:
 	virtual void BeginPlay() override;
