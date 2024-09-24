@@ -31,6 +31,21 @@ protected:
 	*/
 	AMyCharacter* MyCharacter{};
 
+	/*
+		OFFSET
+	*/
+	float YawLimit{};
+	float PitchLimit{};
+
+	/*
+		ATTRIBS
+	*/
+	float DefaultSpeed{};
+
+	UCapsuleComponent* CapsuleComponent{};
+	USkeletalMeshComponent* MeshComponent{};
+	UEnemyCombatComponent* CombatComponent{};
+
 private:
 
 	void SetupReferences();
@@ -39,10 +54,6 @@ private:
 		COMPONENTS
 	*/
 	void SetupComponents();
-
-	UCapsuleComponent* CapsuleComponent{};
-	USkeletalMeshComponent* MeshComponent{};
-	UEnemyCombatComponent* CombatComponent{};
 
 	/*
 		OFFSET
@@ -53,16 +64,6 @@ private:
 	void AimOffset(float deltaTime);
 	bool bIsInterping{};
 	float EnemySpeed{};
-
-protected:
-	float YawLimit{};
-	float PitchLimit{};
-
-	/*
-		ATTRIBS
-	*/
-	float DefaultSpeed{};
-	
 
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
