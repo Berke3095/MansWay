@@ -42,15 +42,18 @@ void AMyWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AMyWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (MyCharacter)
+	if (OtherActor->IsA<AMyCharacter>())
 	{
-		MyCharacter->RemoveFromOverlaps(this);
-		if (MyCharacter->GetOverlappingInteractables().Num() == 0)
+		if (MyCharacter)
 		{
-			WidgetManager->RemovePickUpWidget();
+			MyCharacter->RemoveFromOverlaps(this);
+			if (MyCharacter->GetOverlappingInteractables().Num() == 0)
+			{
+				WidgetManager->RemovePickUpWidget();
+			}
 		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::OnSphereEndOverlap - MyCharacter is null.")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::OnSphereEndOverlap - MyCharacter is null.")); }
 }
 
 void AMyWeapon::SetupComponents()
