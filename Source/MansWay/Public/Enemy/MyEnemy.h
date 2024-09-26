@@ -2,12 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Enums/MyEnemyEnums.h"
 #include "MyEnemy.generated.h"
 
 class UCapsuleComponent;
 class AMyAIController;
 class AMyCharacter;
 class UEnemyCombatComponent;
+class USphereComponent;
 
 UCLASS(Abstract)
 class MANSWAY_API AMyEnemy : public ACharacter
@@ -46,6 +48,9 @@ protected:
 	USkeletalMeshComponent* MeshComponent{};
 	UEnemyCombatComponent* CombatComponent{};
 
+	UPROPERTY(EditDefaultsOnly)
+	USphereComponent* AttackSphere{};
+
 private:
 
 	void SetupReferences();
@@ -64,6 +69,17 @@ private:
 	void AimOffset(float deltaTime);
 	bool bIsInterping{};
 	float EnemySpeed{};
+
+	/*
+		ATTACK
+	*/
+	UFUNCTION()
+	void OnEnemySphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnEnemySphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	EEnemyCombatState EnemyCombatState = EEnemyCombatState::EECS_NONE;
 
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }

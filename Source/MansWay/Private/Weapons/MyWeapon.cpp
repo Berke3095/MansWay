@@ -65,7 +65,6 @@ void AMyWeapon::SetupComponents()
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponMesh is null.")); }
 
@@ -76,6 +75,7 @@ void AMyWeapon::SetupComponents()
 		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		WeaponBox->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponBox is null.")); }
 
@@ -89,6 +89,7 @@ void AMyWeapon::SetupComponents()
 		WeaponSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		WeaponSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnSphereOverlap);
 		WeaponSphere->OnComponentEndOverlap.AddDynamic(this, &AMyWeapon::OnSphereEndOverlap);
+		WeaponSphere->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponSphere is null.")); }
 }
