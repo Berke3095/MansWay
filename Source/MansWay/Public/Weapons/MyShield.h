@@ -17,8 +17,8 @@ public:
 	AMyShield();
 
 private:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
 
 	void SetupComponents();
 };

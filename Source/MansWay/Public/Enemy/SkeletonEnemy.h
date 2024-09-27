@@ -15,11 +15,15 @@ public:
 	ASkeletonEnemy();
 
 private:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
 
 	void AttachStartingWeapon();
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TSubclassOf<AMyWeapon> WeaponClass{};
+
+	void Attack() override;
+
+	void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) override;
 };

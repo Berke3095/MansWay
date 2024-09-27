@@ -15,9 +15,6 @@ void AMyAIController::BeginPlay()
 
 	MyCharacter = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("AMyAIController::BeginPlay - MyCharacter is null")); }
-
-	MyEnemy = Cast<AMyEnemy>(GetPawn());
-	if (!MyEnemy) { UE_LOG(LogTemp, Error, TEXT("AMyAIController::BeginPlay - MyEnemy is null")); }
 }
 
 void AMyAIController::Tick(float DeltaTime)
@@ -34,7 +31,7 @@ void AMyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 		if (!GetWorldTimerManager().IsTimerActive(ChaseTimer))
 		{
 			bCanChase = false;
-			float chaseResetTime{ 0.5f };
+			const float chaseResetTime{ 0.5f };
 			GetWorldTimerManager().SetTimer(ChaseTimer, this, &AMyAIController::ResetChase, chaseResetTime, false);
 		}
 	}
@@ -49,25 +46,29 @@ void AMyAIController::ResetChase()
 	bCanChase = true;
 }
 
-void AMyAIController::ChasePlayer()
+void AMyAIController::ChasePlayer(AMyEnemy* ownerEnemy)
 {
 	if (bCanChase)
 	{
-		if (MyCharacter && MyEnemy)
+		if (MyCharacter && ownerEnemy)
 		{
-			MoveToActor(MyCharacter, MyEnemy->GetAvoidance());
+			MoveToActor(MyCharacter, ownerEnemy->GetAvoidance());
 
-			FVector enemyLoc = MyEnemy->GetActorLocation();
+			FVector enemyLoc = ownerEnemy->GetActorLocation();
 			FVector charLoc = MyCharacter->GetActorLocation();
 
 			float distance = FVector::Dist(enemyLoc, charLoc);
-			if (distance <= MyEnemy->GetAttackRange())
+			if (distance <= ownerEnemy->GetAttackRange())
 			{
-				MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_Attacking);
+				ownerEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_Attacking);
+				if(ownerEnemy->GetbCanAttack()) 
+				{ 
+					ownerEnemy->Attack();
+				}
 			}
 			else
 			{
-				MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_NONE);
+				ownerEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_NONE);
 			}
 		}
 	}

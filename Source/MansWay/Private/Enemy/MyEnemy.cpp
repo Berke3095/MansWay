@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/EnemyCombatComponent.h"
+#include "Animation/AnimMontage.h"
+#include "Animations/EnemyAnimInstance.h"
 
 AMyEnemy::AMyEnemy()
 {
@@ -34,8 +36,9 @@ void AMyEnemy::Tick(float DeltaTime)
 
 	if (MyAIController)
 	{
-		MyAIController->ChasePlayer();
+		MyAIController->ChasePlayer(this);
 	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::Tick - MyAIController is null")); }
 }
 
 void AMyEnemy::SetupReferences()
@@ -45,6 +48,13 @@ void AMyEnemy::SetupReferences()
 
 	MyCharacter = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if(!MyCharacter) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupReferences - MyCharacter is null")); }
+
+	AnimInstance = Cast<UEnemyAnimInstance>(MeshComponent->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AMyEnemy::OnNotifyBegin);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupReferences - AnimInstance is null.")); }
 }
 
 void AMyEnemy::SetupComponents()
@@ -108,5 +118,26 @@ void AMyEnemy::AimOffset(float deltaTime)
 
 		EnemyYaw = deltaRotation.Yaw;
 		EnemyPitch = deltaRotation.Pitch;
+	}
+}
+
+void AMyEnemy::ResetAttack()
+{
+	if (GetWorldTimerManager().IsTimerActive(AttackTimer))
+	{
+		GetWorldTimerManager().ClearTimer(AttackTimer);
+	}
+	bCanAttack = true;
+}
+
+void AMyEnemy::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	if (NotifyName == "Cooldown_Initiator")
+	{
+		bCanAttack = false;
+		if (!GetWorldTimerManager().IsTimerActive(AttackTimer))
+		{
+			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMyEnemy::ResetAttack, AttackCooldown, false);
+		}
 	}
 }

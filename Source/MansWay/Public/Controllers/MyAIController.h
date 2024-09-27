@@ -20,7 +20,6 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	AMyCharacter* MyCharacter{};
-	AMyEnemy* MyEnemy{};
 
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
@@ -29,6 +28,6 @@ private:
 	void ResetChase();
 
 public:
-	void ChasePlayer();
+	void ChasePlayer(AMyEnemy* ownerEnemy);
 
 };

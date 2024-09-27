@@ -9,6 +9,8 @@ class UCapsuleComponent;
 class AMyAIController;
 class AMyCharacter;
 class UEnemyCombatComponent;
+class UAnimMontage;
+class UEnemyAnimInstance;
 
 UCLASS(Abstract)
 class MANSWAY_API AMyEnemy : public ACharacter
@@ -52,6 +54,20 @@ protected:
 	*/
 	float AttackRange{};
 	float Avoidance{};
+	float AttackCooldown{};
+
+	EEnemyCombatState EnemyCombatState = EEnemyCombatState::EECS_NONE;
+
+	/*
+		ANIMATION
+	*/
+	UEnemyAnimInstance* AnimInstance{};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* AttackMontage{};
+
+	UFUNCTION()
+	virtual void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 private:
 
@@ -72,10 +88,9 @@ private:
 	bool bIsInterping{};
 	float EnemySpeed{};
 
-	/*
-		ATTACK
-	*/
-	EEnemyCombatState EnemyCombatState = EEnemyCombatState::EECS_NONE;
+	FTimerHandle AttackTimer{};
+	bool bCanAttack{ true };
+	void ResetAttack();
 
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
@@ -87,5 +102,8 @@ public:
 
 	FORCEINLINE const EEnemyCombatState GetEnemyCombatState() const { return EnemyCombatState; }
 	FORCEINLINE void SetEnemyCombatState(EEnemyCombatState state) { if (EnemyCombatState != state) EnemyCombatState = state; }
+
+	virtual void Attack() {};
+	FORCEINLINE const bool GetbCanAttack() const { return bCanAttack; }
 
 };

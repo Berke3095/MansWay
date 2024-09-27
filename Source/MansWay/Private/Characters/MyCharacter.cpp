@@ -75,12 +75,15 @@ void AMyCharacter::SetupReferences()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - PlayerController is null.")); }
 
-	MyAnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (MyAnimInstance)
+	if (MeshComponent)
 	{
-		MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AMyCharacter::OnNotifyBegin);
+		MyAnimInstance = Cast<UMyAnimInstance>(MeshComponent->GetAnimInstance());
+		if (MyAnimInstance)
+		{
+			MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AMyCharacter::OnNotifyBegin);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - MyAnimInstance is null.")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupReferences - MyAnimInstance is null.")); }
 }
 
 void AMyCharacter::SetupComponents()
@@ -305,7 +308,7 @@ void AMyCharacter::Parry()
 			MyAnimInstance->Montage_Play(ParryMontage);
 			CombatState = ECombatState::ECS_Parrying;
 
-			float parryResetTime{ 3.0f };
+			const float parryResetTime{ 3.0f };
 			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, parryResetTime, false);
 		}
 		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - MyAnimInstance is null.")); }
@@ -412,13 +415,13 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				if (HeavyInc >= 1)
 				{
 					HeavyInc--;
-					FName CurrentSection = MyAnimInstance->Montage_GetCurrentSection(HeavyMontage);
-					if (CurrentSection == "Heavy_Slash")
+					FName currentSection = MyAnimInstance->Montage_GetCurrentSection(HeavyMontage);
+					if (currentSection == "Heavy_Slash")
 					{
 						MyAnimInstance->Montage_Play(HeavyMontage);
 						MyAnimInstance->Montage_JumpToSection("Heavy_SpinShield", HeavyMontage);
 					}
-					else if (CurrentSection == "Heavy_SpinShield") 
+					else if (currentSection == "Heavy_SpinShield")
 					{
 						MyAnimInstance->Montage_Play(HeavyMontage);
 						MyAnimInstance->Montage_JumpToSection("Heavy_Overhead", HeavyMontage);
@@ -442,13 +445,13 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				if (LightInc >= 1)
 				{
 					LightInc--;
-					FName CurrentSection = MyAnimInstance->Montage_GetCurrentSection(LightMontage);
-					if (CurrentSection == "Light_Stab")
+					FName currentSection = MyAnimInstance->Montage_GetCurrentSection(LightMontage);
+					if (currentSection == "Light_Stab")
 					{
 						MyAnimInstance->Montage_Play(LightMontage);
 						MyAnimInstance->Montage_JumpToSection("Light_LeftToRight", LightMontage);
 					}
-					else if (CurrentSection == "Light_LeftToRight")
+					else if (currentSection == "Light_LeftToRight")
 					{
 						MyAnimInstance->Montage_Play(LightMontage);
 						MyAnimInstance->Montage_JumpToSection("Light_Overhead", LightMontage);

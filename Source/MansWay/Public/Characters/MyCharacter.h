@@ -45,6 +45,8 @@ private:
 	const float CombatSpeed{ 125.0 };
 	const float SprintSpeed{ 350.0f };
 
+	const int32 MaxHP{ 1000 };
+
 	/*
 		REFERENCES
 	*/

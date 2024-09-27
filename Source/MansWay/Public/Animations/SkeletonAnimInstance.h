@@ -10,6 +10,6 @@ class MANSWAY_API USkeletonAnimInstance : public UEnemyAnimInstance
 	GENERATED_BODY()
 	
 private:
-	virtual void NativeInitializeAnimation() override;
-	virtual void NativeUpdateAnimation(float DeltaTime) override;
+	void NativeInitializeAnimation() override;
+	void NativeUpdateAnimation(float DeltaTime) override;
 };
