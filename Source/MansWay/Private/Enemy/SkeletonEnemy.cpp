@@ -1,6 +1,5 @@
 #include "Enemy/SkeletonEnemy.h"
 #include "Controllers/MyAIController.h"
-#include "Characters/MyCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/EnemyCombatComponent.h"
@@ -15,6 +14,9 @@ ASkeletonEnemy::ASkeletonEnemy()
 
 	DefaultSpeed = 250.0f;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+
+	AttackRange = 250.0f;
+	Avoidance = 50.0f;
 }
 
 void ASkeletonEnemy::BeginPlay()
@@ -28,9 +30,9 @@ void ASkeletonEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (MyCharacter && MyAIController)
+	if (MyAIController)
 	{
-		MyAIController->MoveToActor(MyCharacter, 50.0f);
+		MyAIController->ChasePlayer();
 	}
 }
 

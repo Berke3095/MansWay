@@ -4,6 +4,9 @@
 #include "AIController.h"
 #include "MyAIController.generated.h"
 
+class AMyCharacter;
+class AMyEnemy;
+
 UCLASS()
 class MANSWAY_API AMyAIController : public AAIController
 {
@@ -15,5 +18,11 @@ public:
 private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	
+
+	AMyCharacter* MyCharacter{};
+	AMyEnemy* MyEnemy{};
+
+public:
+	void ChasePlayer();
+
 };

@@ -6,7 +6,7 @@ void UEnemyAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	Enemy = Cast<AMyEnemy>(TryGetPawnOwner());
-	if(!Enemy) {UE_LOG(LogTemp, Error, TEXT("UEnemyAnimInstance::NativeInitializeAnimation - Enemy is null")) }
+	if (!Enemy) { UE_LOG(LogTemp, Error, TEXT("UEnemyAnimInstance::NativeInitializeAnimation - Enemy is null")); }
 }
 
 void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTime)

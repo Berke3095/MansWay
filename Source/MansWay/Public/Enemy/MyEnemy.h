@@ -9,7 +9,6 @@ class UCapsuleComponent;
 class AMyAIController;
 class AMyCharacter;
 class UEnemyCombatComponent;
-class USphereComponent;
 
 UCLASS(Abstract)
 class MANSWAY_API AMyEnemy : public ACharacter
@@ -48,8 +47,11 @@ protected:
 	USkeletalMeshComponent* MeshComponent{};
 	UEnemyCombatComponent* CombatComponent{};
 
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* AttackSphere{};
+	/*
+		ATTACK
+	*/
+	float AttackRange{};
+	float Avoidance{};
 
 private:
 
@@ -73,18 +75,17 @@ private:
 	/*
 		ATTACK
 	*/
-	UFUNCTION()
-	void OnEnemySphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnEnemySphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 	EEnemyCombatState EnemyCombatState = EEnemyCombatState::EECS_NONE;
 
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
 	FORCEINLINE const float GetEnemyPitch() const { return EnemyPitch; }
 	FORCEINLINE const float GetEnemySpeed() const { return EnemySpeed; }
+
+	FORCEINLINE const float GetAttackRange() const { return AttackRange; }
+	FORCEINLINE const float GetAvoidance() const { return Avoidance; }
+
 	FORCEINLINE const EEnemyCombatState GetEnemyCombatState() const { return EnemyCombatState; }
+	FORCEINLINE void SetEnemyCombatState(EEnemyCombatState state) { if (EnemyCombatState != state) EnemyCombatState = state; }
 
 };

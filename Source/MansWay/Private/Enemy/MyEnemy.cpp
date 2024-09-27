@@ -7,7 +7,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/EnemyCombatComponent.h"
-#include "Components/SphereComponent.h"
 
 AMyEnemy::AMyEnemy()
 {
@@ -71,19 +70,6 @@ void AMyEnemy::SetupComponents()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - MeshComponent is null.")); }
 
-	AttackSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"));
-	if (AttackSphere)
-	{
-		AttackSphere->SetupAttachment(RootComponent);
-		AttackSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		AttackSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel7); // EnemySphere
-		AttackSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		AttackSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		AttackSphere->bUseAttachParentBound = true;
-		AttackSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyEnemy::OnEnemySphereOverlap);
-		AttackSphere->OnComponentEndOverlap.AddDynamic(this, &AMyEnemy::OnEnemySphereEndOverlap);
-	}
-
 	CombatComponent = CreateDefaultSubobject<UEnemyCombatComponent>(TEXT("EnemyCombatComponent"));
 	if(!CombatComponent){ UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - CombatComponent is null.")); }
 }
@@ -117,21 +103,5 @@ void AMyEnemy::AimOffset(float deltaTime)
 
 		EnemyYaw = deltaRotation.Yaw;
 		EnemyPitch = deltaRotation.Pitch;
-	}
-}
-
-void AMyEnemy::OnEnemySphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor->IsA<AMyCharacter>())
-	{
-		EnemyCombatState = EEnemyCombatState::EECS_Attacking;
-	}
-}
-
-void AMyEnemy::OnEnemySphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor->IsA<AMyCharacter>())
-	{
-		EnemyCombatState = EEnemyCombatState::EECS_NONE;
 	}
 }
