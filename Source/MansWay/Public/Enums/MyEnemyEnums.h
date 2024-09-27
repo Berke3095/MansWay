@@ -1,7 +1,8 @@
 #pragma once
 
-enum class EEnemyCombatState
+UENUM(BlueprintType)
+enum class EEnemyCombatState : uint8
 {
-	EECS_Attacking,
-	EECS_NONE
+	EECS_Attacking UMETA(DisplayName = "Attacking"),
+	EECS_NONE UMETA(DisplayName = "NONE")
 };

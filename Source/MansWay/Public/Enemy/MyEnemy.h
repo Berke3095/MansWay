@@ -85,5 +85,6 @@ public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
 	FORCEINLINE const float GetEnemyPitch() const { return EnemyPitch; }
 	FORCEINLINE const float GetEnemySpeed() const { return EnemySpeed; }
+	FORCEINLINE const EEnemyCombatState GetEnemyCombatState() const { return EnemyCombatState; }
 
 };

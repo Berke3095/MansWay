@@ -18,6 +18,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		EnemySpeed = Enemy->GetEnemySpeed();
 		EnemyYaw = Enemy->GetEnemyYaw();
 		EnemyPitch = Enemy->GetEnemyPitch();
+		EnemyCombatState = Enemy->GetEnemyCombatState();
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("UEnemyAnimInstance::NativeUpdateAnimation - Enemy is null")) }
 }

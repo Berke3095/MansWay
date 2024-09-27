@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Enums/MyEnemyEnums.h"
 #include "EnemyAnimInstance.generated.h"
 
 class AMyEnemy;
@@ -23,6 +24,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float EnemySpeed{};
+
+	UPROPERTY(BlueprintReadOnly, Category = "Enum")
+	EEnemyCombatState EnemyCombatState{};
 
 	AMyEnemy* Enemy{};
 };
