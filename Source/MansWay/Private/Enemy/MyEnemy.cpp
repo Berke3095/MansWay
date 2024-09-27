@@ -31,6 +31,11 @@ void AMyEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+
+	if (MyAIController)
+	{
+		MyAIController->ChasePlayer();
+	}
 }
 
 void AMyEnemy::SetupReferences()

@@ -22,6 +22,12 @@ private:
 	AMyCharacter* MyCharacter{};
 	AMyEnemy* MyEnemy{};
 
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
+	FTimerHandle ChaseTimer{};
+	bool bCanChase{ true };
+	void ResetChase();
+
 public:
 	void ChasePlayer();
 

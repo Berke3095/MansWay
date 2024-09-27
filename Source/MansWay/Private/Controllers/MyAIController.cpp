@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Characters/MyCharacter.h"
 #include "Enemy/MyEnemy.h"
+#include "Navigation/PathFollowingComponent.h"
 
 AMyAIController::AMyAIController()
 {
@@ -24,23 +25,50 @@ void AMyAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AMyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+
+	if (Result.IsSuccess())
+	{
+		if (!GetWorldTimerManager().IsTimerActive(ChaseTimer))
+		{
+			bCanChase = false;
+			float chaseResetTime{ 0.5f };
+			GetWorldTimerManager().SetTimer(ChaseTimer, this, &AMyAIController::ResetChase, chaseResetTime, false);
+		}
+	}
+}
+
+void AMyAIController::ResetChase()
+{
+	if (GetWorldTimerManager().IsTimerActive(ChaseTimer))
+	{
+		GetWorldTimerManager().ClearTimer(ChaseTimer);
+	}
+	bCanChase = true;
+}
+
 void AMyAIController::ChasePlayer()
 {
-	if (MyCharacter && MyEnemy)
+	if (bCanChase)
 	{
-		MoveToActor(MyCharacter, MyEnemy->GetAvoidance());
-
-		FVector enemyLoc = MyEnemy->GetActorLocation();
-		FVector charLoc = MyCharacter->GetActorLocation();
-
-		float distance = FVector::Dist(enemyLoc, charLoc);
-		if (distance <= MyEnemy->GetAttackRange())
+		if (MyCharacter && MyEnemy)
 		{
-			MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_Attacking);
-		}
-		else
-		{
-			MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_NONE);
+			MoveToActor(MyCharacter, MyEnemy->GetAvoidance());
+
+			FVector enemyLoc = MyEnemy->GetActorLocation();
+			FVector charLoc = MyCharacter->GetActorLocation();
+
+			float distance = FVector::Dist(enemyLoc, charLoc);
+			if (distance <= MyEnemy->GetAttackRange())
+			{
+				MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_Attacking);
+			}
+			else
+			{
+				MyEnemy->SetEnemyCombatState(EEnemyCombatState::EECS_NONE);
+			}
 		}
 	}
 }

@@ -29,11 +29,6 @@ void ASkeletonEnemy::BeginPlay()
 void ASkeletonEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (MyAIController)
-	{
-		MyAIController->ChasePlayer();
-	}
 }
 
 void ASkeletonEnemy::AttachStartingWeapon()

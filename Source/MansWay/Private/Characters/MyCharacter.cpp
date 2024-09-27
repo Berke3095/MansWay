@@ -305,8 +305,8 @@ void AMyCharacter::Parry()
 			MyAnimInstance->Montage_Play(ParryMontage);
 			CombatState = ECombatState::ECS_Parrying;
 
-			float ParryResetTime{ 3.0f };
-			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, ParryResetTime, false);
+			float parryResetTime{ 3.0f };
+			GetWorldTimerManager().SetTimer(ParryResetTimer, this, &AMyCharacter::ResetParry, parryResetTime, false);
 		}
 		else if (!MyAnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - MyAnimInstance is null.")); }
 		else if (!ParryMontage) { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::Parry - ParryMontage is null.")); }
