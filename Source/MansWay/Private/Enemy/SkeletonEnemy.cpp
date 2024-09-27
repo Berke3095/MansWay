@@ -12,7 +12,7 @@ ASkeletonEnemy::ASkeletonEnemy()
 	YawLimit = 140.f;
 	PitchLimit = 90.f;
 
-	DefaultSpeed = 250.0f;
+	DefaultSpeed = 200.0f;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 
 	AttackRange = 250.0f;
