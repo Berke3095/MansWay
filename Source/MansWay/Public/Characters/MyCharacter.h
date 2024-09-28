@@ -177,4 +177,6 @@ public:
 	AActor* CalculateClosestOverlap();
 
 	FORCEINLINE const bool GetbCombatStance() const { return bCombatStance; }
+
+	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
 };

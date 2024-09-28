@@ -57,6 +57,9 @@ private:
 	AMyCharacter* MyCharacter{};
 	AMyWidgetManager* WidgetManager{};
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attrib")
+	int32 WeaponDamage{};
+
 public:
 	void SetEquippedSettings();
 	void SetDroppedSettings();

@@ -60,13 +60,23 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 {
 	if (OtherActor->IsA<AMyEnemy>())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Hit the enemy!"));
 		DisableWeaponBox();
+		if (AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor))
+		{
+			int32 random = FMath::RandRange(-10, 10);
+			int32 damage = WeaponDamage + random;
+			enemy->ReduceHP(damage);
+		}
 	}
 	else if(OtherActor->IsA<AMyCharacter>())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Hit the player!"));
 		DisableWeaponBox();
+		if (AMyCharacter* character = Cast<AMyCharacter>(OtherActor))
+		{
+			int32 random = FMath::RandRange(-10, 10);
+			int32 damage = WeaponDamage + random;
+			character->ReduceHP(damage);
+		}
 	}
 }
 

@@ -112,4 +112,6 @@ public:
 
 	virtual void Attack() {};
 	FORCEINLINE const bool GetbCanAttack() const { return bCanAttack; }
+
+	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
 };
