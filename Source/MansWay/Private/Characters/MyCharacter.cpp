@@ -513,32 +513,20 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 	{
 		if (NotifyName == "Right_Collision_Enable")
 		{
-			if (CombatComponent->GetEquippedRight())
-			{
-				CombatComponent->EnableRightWeapon();
-			}
+			CombatComponent->EnableRightWeapon();
 		}
 		else if (NotifyName == "Right_Collision_Disable")
 		{
-			if (CombatComponent->GetEquippedRight())
-			{
-				CombatComponent->DisableRightWeapon();
-			}
+			CombatComponent->DisableRightWeapon();
 		}
 
 		if (NotifyName == "Left_Collision_Enable")
 		{
-			if (CombatComponent->GetEquippedLeft())
-			{
-				CombatComponent->EnableLeftWeapon();
-			}
+			CombatComponent->EnableLeftWeapon();
 		}
 		else if (NotifyName == "Left_Collision_Disable")
 		{
-			if (CombatComponent->GetEquippedLeft())
-			{
-				CombatComponent->DisableLeftWeapon();
-			}
+			CombatComponent->DisableLeftWeapon();
 		}
 	}
 }

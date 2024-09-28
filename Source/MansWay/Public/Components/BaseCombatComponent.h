@@ -28,9 +28,6 @@ public:
 	void EquipInteractable(ACharacter* newOwner, AActor* actorToEquip);
 	FORCEINLINE bool CheckWeapons() { return EquippedRightHand && EquippedLeftHand ? true : false; }
 
-	FORCEINLINE const AMyWeapon* GetEquippedRight() const { return EquippedRightHand ? EquippedRightHand : nullptr; }
-	FORCEINLINE const AMyWeapon* GetEquippedLeft() const { return EquippedLeftHand ? EquippedLeftHand : nullptr; }
-
 	void EnableRightWeapon();
 	void EnableLeftWeapon();
 	void DisableRightWeapon();
