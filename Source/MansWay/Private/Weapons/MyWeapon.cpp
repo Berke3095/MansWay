@@ -90,6 +90,7 @@ void AMyWeapon::SetupComponents()
 		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnBoxOverlap);
+		WeaponBox->SetGenerateOverlapEvents(true);
 		WeaponBox->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponBox is null.")); }
