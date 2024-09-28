@@ -11,6 +11,9 @@
 #include "Animation/AnimMontage.h"
 #include "Components/SphereComponent.h"
 #include "Enemy/MyEnemy.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Weapons/MyShield.h"
+#include "Weapons/MySword.h"
 
 
 AMyCharacter::AMyCharacter()
@@ -29,6 +32,8 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetupReferences();
+	AttachStartingWeapon(SwordClass);
+	AttachStartingWeapon(ShieldClass);
 }
 
 void AMyCharacter::Tick(float DeltaTime)
@@ -62,6 +67,27 @@ void AMyCharacter::LockEnemy(float deltaTime)
 			PlayerController->SetControlRotation(newRot);
 		}
 	}
+}
+
+void AMyCharacter::AttachStartingWeapon(TSubclassOf<AMyWeapon> weaponClass)
+{
+	FString socketName{};
+	if (weaponClass->IsChildOf(AMySword::StaticClass())) { socketName = "Sword_Socket"; }
+	else if (weaponClass->IsChildOf(AMyShield::StaticClass())) { socketName = "Shield_Socket"; }
+
+	const USkeletalMeshSocket* weaponSocket = MeshComponent->GetSocketByName(FName(socketName));
+
+	FTransform weaponSocketTransform = weaponSocket->GetSocketTransform(MeshComponent);
+	if (weaponClass)
+	{
+		AActor* weapon = GetWorld()->SpawnActor<AActor>(weaponClass, weaponSocketTransform);
+		if (weapon && CombatComponent)
+		{
+			CombatComponent->EquipInteractable(this, weapon);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::AttachStartingWeapon - weapon is null.")) }
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::AttachStartingWeapon - weaponClass is null.")) }
 }
 
 void AMyCharacter::SetupReferences()
@@ -106,6 +132,7 @@ void AMyCharacter::SetupComponents()
 	MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
+		MeshComponent->SetupAttachment(RootComponent);
 		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3); // Player 
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);

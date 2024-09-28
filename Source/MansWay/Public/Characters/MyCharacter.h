@@ -16,6 +16,9 @@ class USphereComponent;
 class UMyAnimInstance;
 class UAnimMontage;
 class AMyEnemy;
+class AMyShield;
+class AMySword;
+class AMyWeapon;
 
 
 UCLASS()
@@ -27,11 +30,18 @@ public:
 	AMyCharacter();
 
 private:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
 
 	void Movement(float deltaTime);
 	void LockEnemy(float deltaTime);
+	void AttachStartingWeapon(TSubclassOf<AMyWeapon> weaponClass);
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<AMySword> SwordClass{};
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<AMyShield> ShieldClass{};
 
 	/*
 		ENUMS
