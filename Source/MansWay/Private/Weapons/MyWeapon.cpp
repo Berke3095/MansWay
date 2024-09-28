@@ -62,10 +62,6 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	{
 		UE_LOG(LogTemp, Error, TEXT("Hit the enemy!"));
 		DisableWeaponBox();
-		/*if (AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor))
-		{
-			enemy->
-		}*/
 	}
 	else if(OtherActor->IsA<AMyCharacter>())
 	{
