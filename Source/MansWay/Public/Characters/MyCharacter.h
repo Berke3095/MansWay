@@ -46,6 +46,7 @@ private:
 	const float SprintSpeed{ 350.0f };
 
 	const int32 MaxHP{ 1000 };
+	int32 HP{};
 
 	/*
 		REFERENCES

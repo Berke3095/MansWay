@@ -6,12 +6,12 @@
 
 class AMyWeapon;
 
-UCLASS( ClassGroup=(Custom), Abstract )
+UCLASS(ClassGroup = (Custom), Abstract)
 class MANSWAY_API UBaseCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UBaseCombatComponent();
 	virtual ~UBaseCombatComponent() {}
 
@@ -27,4 +27,12 @@ protected:
 public:
 	void EquipInteractable(ACharacter* newOwner, AActor* actorToEquip);
 	FORCEINLINE bool CheckWeapons() { return EquippedRightHand && EquippedLeftHand ? true : false; }
+
+	FORCEINLINE const AMyWeapon* GetEquippedRight() const { return EquippedRightHand ? EquippedRightHand : nullptr; }
+	FORCEINLINE const AMyWeapon* GetEquippedLeft() const { return EquippedLeftHand ? EquippedLeftHand : nullptr; }
+
+	void EnableRightWeapon();
+	void EnableLeftWeapon();
+	void DisableRightWeapon();
+	void DisableLeftWeapon();
 };

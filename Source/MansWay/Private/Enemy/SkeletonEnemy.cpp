@@ -18,6 +18,9 @@ ASkeletonEnemy::ASkeletonEnemy()
 	AttackRange = 250.0f;
 	Avoidance = 50.0f;
 	AttackCooldown = 1.25f;
+
+	MaxHP = 200;
+	HP = MaxHP;
 }
 
 void ASkeletonEnemy::BeginPlay()

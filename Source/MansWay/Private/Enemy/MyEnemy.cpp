@@ -70,6 +70,7 @@ void AMyEnemy::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Overlap); // NeutralItem
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap); // Enemy targeter
+		CapsuleComponent->SetGenerateOverlapEvents(true);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - CapsuleComponent is null.")); }
 
@@ -81,6 +82,7 @@ void AMyEnemy::SetupComponents()
 		MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4); // Enemy
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap); // Player weapon
+		MeshComponent->SetGenerateOverlapEvents(true);
 		MeshComponent->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::SetupComponents - MeshComponent is null.")); }
@@ -138,6 +140,39 @@ void AMyEnemy::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayloa
 		if (!GetWorldTimerManager().IsTimerActive(AttackTimer))
 		{
 			GetWorldTimerManager().SetTimer(AttackTimer, this, &AMyEnemy::ResetAttack, AttackCooldown, false);
+		}
+	}
+
+	if (CombatComponent)
+	{
+		if (NotifyName == "Right_Collision_Enable")
+		{
+			if (CombatComponent->GetEquippedRight())
+			{
+				CombatComponent->EnableRightWeapon();
+			}
+		}
+		else if (NotifyName == "Right_Collision_Disable")
+		{
+			if (CombatComponent->GetEquippedRight())
+			{
+				CombatComponent->DisableRightWeapon();
+			}
+		}
+
+		if (NotifyName == "Left_Collision_Enable")
+		{
+			if (CombatComponent->GetEquippedLeft())
+			{
+				CombatComponent->EnableLeftWeapon();
+			}
+		}
+		else if (NotifyName == "Left_Collision_Disable")
+		{
+			if (CombatComponent->GetEquippedLeft())
+			{
+				CombatComponent->DisableLeftWeapon();
+			}
 		}
 	}
 }

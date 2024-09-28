@@ -56,6 +56,24 @@ void AMyWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 
+void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA<AMyEnemy>())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Hit the enemy!"));
+		DisableWeaponBox();
+		/*if (AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor))
+		{
+			enemy->
+		}*/
+	}
+	else if(OtherActor->IsA<AMyCharacter>())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Hit the player!"));
+		DisableWeaponBox();
+	}
+}
+
 void AMyWeapon::SetupComponents()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon Mesh"));
@@ -75,6 +93,7 @@ void AMyWeapon::SetupComponents()
 		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AMyWeapon::OnBoxOverlap);
 		WeaponBox->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetupComponents - WeaponBox is null.")); }
@@ -145,7 +164,7 @@ void AMyWeapon::SetEquippedSettings()
 		}
 		else if(GetOwner()->IsA<AMyEnemy>())
 		{
-			WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2); // Weapon
+			WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2); // Enemy weapon
 			WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // Player
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("Weapon equipped by unknown owner.")); }
@@ -166,9 +185,20 @@ void AMyWeapon::SetDroppedSettings()
 
 	if (WeaponBox)
 	{
+		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel6); // NeutralItem
 		WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyWeapon::SetDroppedSettings - WeaponBox is null.")); }
+}
+
+void AMyWeapon::EnableWeaponBox()
+{
+	if (WeaponBox) { WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly); }
+}
+
+void AMyWeapon::DisableWeaponBox()
+{
+	if (WeaponBox) { WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
 }
 

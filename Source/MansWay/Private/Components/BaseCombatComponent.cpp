@@ -88,3 +88,35 @@ void UBaseCombatComponent::EquipInteractable(ACharacter* newOwner, AActor* actor
 	else if (!actorToEquip) { UE_LOG(LogTemp, Error, TEXT("UBaseCombatComponent::EquipInteractable - actorToEquip is null.")); }
 }
 
+void UBaseCombatComponent::EnableRightWeapon()
+{
+	if (EquippedRightHand)
+	{
+		EquippedRightHand->EnableWeaponBox();
+	}
+}
+
+void UBaseCombatComponent::EnableLeftWeapon()
+{
+	if (EquippedLeftHand)
+	{
+		EquippedLeftHand->EnableWeaponBox();
+	}
+}
+
+void UBaseCombatComponent::DisableRightWeapon()
+{
+	if (EquippedRightHand)
+	{
+		EquippedRightHand->DisableWeaponBox();
+	}
+}
+
+void UBaseCombatComponent::DisableLeftWeapon()
+{
+	if (EquippedLeftHand)
+	{
+		EquippedLeftHand->DisableWeaponBox();
+	}
+}
+

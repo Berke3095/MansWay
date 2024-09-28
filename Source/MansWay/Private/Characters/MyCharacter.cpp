@@ -20,6 +20,8 @@ AMyCharacter::AMyCharacter()
 	SetupComponents();
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+
+	HP = MaxHP;
 }
 
 void AMyCharacter::BeginPlay()
@@ -97,6 +99,7 @@ void AMyCharacter::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Overlap); // NeutralItem
+		CapsuleComponent->SetGenerateOverlapEvents(true);
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - CapsuleComponent is null.")); }
 
@@ -107,6 +110,7 @@ void AMyCharacter::SetupComponents()
 		MeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3); // Player 
 		MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap); // Enemy weapon
+		MeshComponent->SetGenerateOverlapEvents(true);
 		MeshComponent->bUseAttachParentBound = true;
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::SetupComponents - MeshComponent is null.")); }
@@ -477,6 +481,39 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 		}
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyCharacter::OnNotifyBegin - MyAnimInstance is null.")); }
+
+	if (CombatComponent)
+	{
+		if (NotifyName == "Right_Collision_Enable")
+		{
+			if (CombatComponent->GetEquippedRight())
+			{
+				CombatComponent->EnableRightWeapon();
+			}
+		}
+		else if (NotifyName == "Right_Collision_Disable")
+		{
+			if (CombatComponent->GetEquippedRight())
+			{
+				CombatComponent->DisableRightWeapon();
+			}
+		}
+
+		if (NotifyName == "Left_Collision_Enable")
+		{
+			if (CombatComponent->GetEquippedLeft())
+			{
+				CombatComponent->EnableLeftWeapon();
+			}
+		}
+		else if (NotifyName == "Left_Collision_Disable")
+		{
+			if (CombatComponent->GetEquippedLeft())
+			{
+				CombatComponent->DisableLeftWeapon();
+			}
+		}
+	}
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

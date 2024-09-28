@@ -19,10 +19,17 @@ class MANSWAY_API AMyEnemy : public ACharacter
 
 public:
 	AMyEnemy();
+	virtual ~AMyEnemy() {}
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	/*
+		ATTRIBS
+	*/
+	int32 MaxHP{};
+	int32 HP{};
 
 	/*
 		AI
@@ -105,5 +112,4 @@ public:
 
 	virtual void Attack() {};
 	FORCEINLINE const bool GetbCanAttack() const { return bCanAttack; }
-
 };
