@@ -73,6 +73,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* AttackMontage{};
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* DeathMontage{};
+
 	UFUNCTION()
 	virtual void OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
@@ -99,6 +102,13 @@ private:
 	bool bCanAttack{ true };
 	void ResetAttack();
 
+	/*
+		DEATH
+	*/
+	FTimerHandle DestroyInstanceTimer{};
+	void DestroyDead();
+	bool bIsDead{};
+
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
 	FORCEINLINE const float GetEnemyPitch() const { return EnemyPitch; }
@@ -113,5 +123,9 @@ public:
 	virtual void Attack() {};
 	FORCEINLINE const bool GetbCanAttack() const { return bCanAttack; }
 
+	FORCEINLINE const int32 GetHP() const { return HP; }
 	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
+
+	void GoDead();
+	FORCEINLINE const bool GetbIsDead() const { return bIsDead; }
 };

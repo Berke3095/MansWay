@@ -9,6 +9,7 @@
 #include "Components/EnemyCombatComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Animations/EnemyAnimInstance.h"
+#include "Weapons/MyWeapon.h"
 
 AMyEnemy::AMyEnemy()
 {
@@ -32,13 +33,16 @@ void AMyEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AimOffset(DeltaTime);
-
-	if (MyAIController)
+	if (!bIsDead)
 	{
-		MyAIController->ChasePlayer(this);
+		AimOffset(DeltaTime);
+
+		if (MyAIController)
+		{
+			MyAIController->ChasePlayer(this);
+		}
+		else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::Tick - MyAIController is null")); }
 	}
-	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::Tick - MyAIController is null")); }
 }
 
 void AMyEnemy::SetupReferences()
@@ -68,7 +72,6 @@ void AMyEnemy::SetupComponents()
 		CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Overlap); // NeutralItem
 		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap); // Enemy targeter
 		CapsuleComponent->SetGenerateOverlapEvents(true);
 	}
@@ -130,6 +133,56 @@ void AMyEnemy::ResetAttack()
 		GetWorldTimerManager().ClearTimer(AttackTimer);
 	}
 	bCanAttack = true;
+}
+
+void AMyEnemy::GoDead()
+{
+	bIsDead = true;
+	GetCharacterMovement()->DisableMovement();
+
+	if (!GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
+	{
+		float timeUntilDestroy = 3.0f;
+		GetWorldTimerManager().SetTimer(DestroyInstanceTimer, this, &AMyEnemy::DestroyDead, timeUntilDestroy, false);
+	}
+
+	if (CombatComponent)
+	{
+		if (CombatComponent->GetLeftWeapon())
+		{
+			CombatComponent->DropInteractable(this, Cast<AActor>(CombatComponent->GetLeftWeapon()));
+		}
+
+		if (CombatComponent->GetRightWeapon())
+		{
+			CombatComponent->DropInteractable(this, Cast<AActor>(CombatComponent->GetRightWeapon()));
+		}
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - CombatComponent is null.")); }
+
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->SetbIsDead(true);
+
+		if (!AnimInstance->Montage_IsPlaying(DeathMontage))
+		{
+			AnimInstance->Montage_Play(DeathMontage);
+		}
+	}
+	else if(!AnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - AnimInstance is null.")); }
+	else if(!DeathMontage) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - DeathMontage is null.")); }
+
+	if (CapsuleComponent) { CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
+	if (MeshComponent) { MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
+}
+
+void AMyEnemy::DestroyDead()
+{
+	if (GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
+	{
+		GetWorldTimerManager().ClearTimer(DestroyInstanceTimer);
+	}
+	Destroy();
 }
 
 void AMyEnemy::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)

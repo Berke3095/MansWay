@@ -25,4 +25,10 @@ protected:
 	float EnemySpeed{};
 
 	AMyEnemy* Enemy{};
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsDead{};
+
+public:
+	FORCEINLINE void SetbIsDead(bool value) { if (bIsDead != value) { bIsDead = value; } }
 };

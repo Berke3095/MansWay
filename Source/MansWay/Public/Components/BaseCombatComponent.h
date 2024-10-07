@@ -22,11 +22,13 @@ protected:
 	AMyWeapon* EquippedLeftHand{};
 	AMyWeapon* EquippedRightHand{};
 
-	void DropInteractable(ACharacter* owner, AActor* actorToDrop);
-
 public:
+	void DropInteractable(ACharacter* owner, AActor* actorToDrop);
 	void EquipInteractable(ACharacter* newOwner, AActor* actorToEquip);
 	FORCEINLINE bool CheckWeapons() { return EquippedRightHand && EquippedLeftHand ? true : false; }
+
+	FORCEINLINE AMyWeapon* GetLeftWeapon() const { return EquippedLeftHand ? EquippedLeftHand : nullptr; }
+	FORCEINLINE AMyWeapon* GetRightWeapon() const { return EquippedRightHand ? EquippedRightHand : nullptr; }
 
 	void EnableRightWeapon();
 	void EnableLeftWeapon();

@@ -66,6 +66,11 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 			int32 random = FMath::RandRange(-10, 10);
 			int32 damage = WeaponDamage + random;
 			enemy->ReduceHP(damage);
+
+			if (enemy->GetHP() <= 0)
+			{
+				enemy->GoDead();
+			}
 		}
 	}
 	else if(OtherActor->IsA<AMyCharacter>())
