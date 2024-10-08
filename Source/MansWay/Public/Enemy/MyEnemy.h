@@ -127,5 +127,4 @@ public:
 	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
 
 	void GoDead();
-	FORCEINLINE const bool GetbIsDead() const { return bIsDead; }
 };

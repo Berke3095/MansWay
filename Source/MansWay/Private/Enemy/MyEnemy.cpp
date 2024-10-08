@@ -137,7 +137,6 @@ void AMyEnemy::ResetAttack()
 
 void AMyEnemy::GoDead()
 {
-	bIsDead = true;
 	GetCharacterMovement()->DisableMovement();
 
 	if (!GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
@@ -163,6 +162,7 @@ void AMyEnemy::GoDead()
 	if (AnimInstance && DeathMontage)
 	{
 		AnimInstance->SetbIsDead(true);
+		bIsDead = true;
 
 		if (!AnimInstance->Montage_IsPlaying(DeathMontage))
 		{

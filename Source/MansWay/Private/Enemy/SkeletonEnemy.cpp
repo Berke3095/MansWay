@@ -19,7 +19,7 @@ ASkeletonEnemy::ASkeletonEnemy()
 	Avoidance = 50.0f;
 	AttackCooldown = 1.25f;
 
-	MaxHP = 50;
+	MaxHP = 200;
 	HP = MaxHP;
 }
 
