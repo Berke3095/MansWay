@@ -179,4 +179,8 @@ public:
 	FORCEINLINE const bool GetbCombatStance() const { return bCombatStance; }
 
 	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
+
+	FORCEINLINE const ECombatState GetCombatState() const { return CombatState; }
+
+	FORCEINLINE const AMyEnemy* GetLockedEnemy() const { return LockedEnemy ? LockedEnemy : nullptr; }
 };

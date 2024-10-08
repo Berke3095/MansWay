@@ -78,9 +78,16 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		DisableWeaponBox();
 		if (AMyCharacter* character = Cast<AMyCharacter>(OtherActor))
 		{
-			int32 random = FMath::RandRange(-10, 10);
-			int32 damage = WeaponDamage + random;
-			character->ReduceHP(damage);
+			if (character->GetCombatState() == ECombatState::ECS_Parrying && character->GetLockedEnemy() == this->GetOwner())
+			{
+
+			}
+			else
+			{
+				int32 random = FMath::RandRange(-10, 10);
+				int32 damage = WeaponDamage + random;
+				character->ReduceHP(damage);
+			}
 		}
 	}
 }
