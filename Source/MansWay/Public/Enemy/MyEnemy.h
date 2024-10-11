@@ -63,7 +63,7 @@ protected:
 	float Avoidance{};
 	float AttackCooldown{};
 
-	EEnemyCombatState EnemyCombatState = EEnemyCombatState::EECS_NONE;
+	 EEnemyCombatState EnemyCombatState{ EEnemyCombatState::EECS_NONE };
 
 	/*
 		ANIMATION
@@ -103,11 +103,22 @@ private:
 	void ResetAttack();
 
 	/*
+		STATE
+	*/
+	EEnemyState EnemyState{ EEnemyState::ES_NONE };
+	void SetEnemyState(EEnemyState enemyState);
+
+	/*
 		DEATH
 	*/
 	FTimerHandle DestroyInstanceTimer{};
 	void DestroyDead();
-	bool bIsDead{};
+
+	/*
+		COMBAT
+	*/
+	FTimerHandle StunTimer{};
+	void ResetStun();
 
 public:
 	FORCEINLINE const float GetEnemyYaw() const { return EnemyYaw; }
@@ -127,4 +138,6 @@ public:
 	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
 
 	void GoDead();
+	void GoStunned();
+	
 };

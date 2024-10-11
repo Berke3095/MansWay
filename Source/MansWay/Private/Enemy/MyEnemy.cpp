@@ -33,7 +33,7 @@ void AMyEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsDead)
+	if (EnemyState == EEnemyState::ES_NONE)
 	{
 		AimOffset(DeltaTime);
 
@@ -135,9 +135,40 @@ void AMyEnemy::ResetAttack()
 	bCanAttack = true;
 }
 
+void AMyEnemy::SetEnemyState(EEnemyState enemyState)
+{
+	if (AnimInstance)
+	{
+		AnimInstance->SetEnemyState(enemyState);
+		if (EnemyState != enemyState)
+		{
+			EnemyState = enemyState;
+			if (enemyState != EEnemyState::ES_NONE)
+			{
+				GetCharacterMovement()->DisableMovement();
+			}
+			else
+			{
+				GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
+			}
+		}
+	}
+}
+
 void AMyEnemy::GoDead()
 {
-	GetCharacterMovement()->DisableMovement();
+	ResetStun();
+	if (AnimInstance && DeathMontage)
+	{
+		SetEnemyState(EEnemyState::ES_Dead);
+
+		if (!AnimInstance->Montage_IsPlaying(DeathMontage))
+		{
+			AnimInstance->Montage_Play(DeathMontage);
+		}
+	}
+	else if (!AnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - AnimInstance is null.")); }
+	else if (!DeathMontage) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - DeathMontage is null.")); }
 
 	if (!GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
 	{
@@ -159,21 +190,21 @@ void AMyEnemy::GoDead()
 	}
 	else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - CombatComponent is null.")); }
 
-	if (AnimInstance && DeathMontage)
-	{
-		AnimInstance->SetbIsDead(true);
-		bIsDead = true;
-
-		if (!AnimInstance->Montage_IsPlaying(DeathMontage))
-		{
-			AnimInstance->Montage_Play(DeathMontage);
-		}
-	}
-	else if(!AnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - AnimInstance is null.")); }
-	else if(!DeathMontage) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - DeathMontage is null.")); }
-
 	if (CapsuleComponent) { CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
 	if (MeshComponent) { MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
+}
+
+void AMyEnemy::GoStunned()
+{
+	if (AnimInstance)
+	{
+		SetEnemyState(EEnemyState::ES_Stunned);
+		if (!GetWorldTimerManager().IsTimerActive(StunTimer))
+		{
+			float stunCooldown = 2.0f;
+			GetWorldTimerManager().SetTimer(StunTimer, this, &AMyEnemy::ResetStun, stunCooldown, false);
+		}
+	}
 }
 
 void AMyEnemy::DestroyDead()
@@ -183,6 +214,15 @@ void AMyEnemy::DestroyDead()
 		GetWorldTimerManager().ClearTimer(DestroyInstanceTimer);
 	}
 	Destroy();
+}
+
+void AMyEnemy::ResetStun()
+{
+	if (GetWorldTimerManager().IsTimerActive(StunTimer))
+	{
+		GetWorldTimerManager().ClearTimer(StunTimer);
+	}
+	SetEnemyState(EEnemyState::ES_NONE);
 }
 
 void AMyEnemy::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)

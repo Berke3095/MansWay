@@ -80,7 +80,10 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		{
 			if (character->GetCombatState() == ECombatState::ECS_Parrying && character->GetLockedEnemy() == this->GetOwner())
 			{
-
+				if (AMyEnemy* enemy = Cast<AMyEnemy>(this->GetOwner()))
+				{
+					enemy->GoStunned();
+				}
 			}
 			else
 			{

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Enums/MyEnemyEnums.h"
 #include "EnemyAnimInstance.generated.h"
 
 class AMyEnemy;
@@ -27,8 +28,8 @@ protected:
 	AMyEnemy* Enemy{};
 
 	UPROPERTY(BlueprintReadOnly)
-	bool bIsDead{};
+	EEnemyState EnemyState{ EEnemyState::ES_NONE };
 
 public:
-	FORCEINLINE void SetbIsDead(bool value) { if (bIsDead != value) { bIsDead = value; } }
+	FORCEINLINE void SetEnemyState(EEnemyState enemyState) { if (EnemyState != enemyState) { EnemyState = enemyState; } }
 };
