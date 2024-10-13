@@ -113,6 +113,10 @@ private:
 	*/
 	FTimerHandle DestroyInstanceTimer{};
 	void DestroyDead();
+	FTimerHandle BuryInstanceTimer{};
+	void BuryDead(float deltaTime);
+	bool bCanBury{};
+	void ActivateBury() { bCanBury = true; }
 
 	/*
 		COMBAT

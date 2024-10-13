@@ -43,6 +43,8 @@ void AMyEnemy::Tick(float DeltaTime)
 		}
 		else { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::Tick - MyAIController is null")); }
 	}
+	
+	if (bCanBury) { BuryDead(DeltaTime); }
 }
 
 void AMyEnemy::SetupReferences()
@@ -170,10 +172,10 @@ void AMyEnemy::GoDead()
 	else if (!AnimInstance) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - AnimInstance is null.")); }
 	else if (!DeathMontage) { UE_LOG(LogTemp, Error, TEXT("AMyEnemy::GoDead - DeathMontage is null.")); }
 
-	if (!GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
+	if (!GetWorldTimerManager().IsTimerActive(BuryInstanceTimer))
 	{
-		float timeUntilDestroy = 3.0f;
-		GetWorldTimerManager().SetTimer(DestroyInstanceTimer, this, &AMyEnemy::DestroyDead, timeUntilDestroy, false);
+		float timeUntilLowering = 2.0f;
+		GetWorldTimerManager().SetTimer(BuryInstanceTimer, this, &AMyEnemy::ActivateBury, timeUntilLowering, false);
 	}
 
 	if (CombatComponent)
@@ -214,6 +216,22 @@ void AMyEnemy::DestroyDead()
 		GetWorldTimerManager().ClearTimer(DestroyInstanceTimer);
 	}
 	Destroy();
+}
+
+void AMyEnemy::BuryDead(float deltaTime)
+{
+	float lowerSpeed = 5.0f;
+
+	FVector currentLocation = GetActorLocation();
+	currentLocation.Z -= lowerSpeed * deltaTime;
+
+	SetActorLocation(currentLocation);
+
+	if (!GetWorldTimerManager().IsTimerActive(DestroyInstanceTimer))
+	{
+		float timeUntilDestroy = 10.0f;
+		GetWorldTimerManager().SetTimer(DestroyInstanceTimer, this, &AMyEnemy::DestroyDead, timeUntilDestroy, false);
+	}
 }
 
 void AMyEnemy::ResetStun()
