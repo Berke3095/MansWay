@@ -478,15 +478,15 @@ void AMyCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPa
 				{
 					LightInc--;
 					FName currentSection = MyAnimInstance->Montage_GetCurrentSection(LightMontage);
-					if (currentSection == "Light_Stab")
+					if (currentSection == "Slash")
 					{
 						MyAnimInstance->Montage_Play(LightMontage);
-						MyAnimInstance->Montage_JumpToSection("Light_LeftToRight", LightMontage);
+						MyAnimInstance->Montage_JumpToSection("Stab", LightMontage);
 					}
-					else if (currentSection == "Light_LeftToRight")
+					else if (currentSection == "Stab")
 					{
 						MyAnimInstance->Montage_Play(LightMontage);
-						MyAnimInstance->Montage_JumpToSection("Light_Overhead", LightMontage);
+						MyAnimInstance->Montage_JumpToSection("Double_Slash", LightMontage);
 					}
 				}
 				else 
