@@ -181,6 +181,10 @@ public:
 	FORCEINLINE void ReduceHP(int32 damage) { HP -= damage; }
 
 	FORCEINLINE const ECombatState GetCombatState() const { return CombatState; }
+	FORCEINLINE void SetCombatState(ECombatState combatState) { if (CombatState != combatState) { CombatState = combatState; } }
 
 	FORCEINLINE const AMyEnemy* GetLockedEnemy() const { return LockedEnemy ? LockedEnemy : nullptr; }
+
+	FORCEINLINE UMyAnimInstance* GetAnimInstance() const { return MyAnimInstance ? MyAnimInstance : nullptr; }
+	FORCEINLINE UAnimMontage* GetParryMontage() const { return ParryMontage; }
 };

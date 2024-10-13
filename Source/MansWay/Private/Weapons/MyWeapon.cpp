@@ -4,6 +4,7 @@
 #include "Characters/MyCharacter.h"
 #include "Widgets/MyWidgetManager.h"
 #include "Enemy/MyEnemy.h"
+#include "Animations/MyAnimInstance.h"
 
 AMyWeapon::AMyWeapon()
 {
@@ -80,6 +81,13 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		{
 			if (character->GetCombatState() == ECombatState::ECS_Parrying && character->GetLockedEnemy() == this->GetOwner())
 			{
+				if (UMyAnimInstance* characterAnimInstance = character->GetAnimInstance())
+				{
+					UAnimMontage* parryMontage = character->GetParryMontage();
+					characterAnimInstance->Montage_Play(parryMontage);
+					characterAnimInstance->Montage_JumpToSection("Parry_Hit", parryMontage);
+					character->SetCombatState(ECombatState::ECS_NONE);
+				}
 				if (AMyEnemy* enemy = Cast<AMyEnemy>(this->GetOwner()))
 				{
 					enemy->GoStunned();

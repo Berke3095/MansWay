@@ -337,6 +337,7 @@ void AMyCharacter::Parry()
 		{
 			bCanParry = false;
 			MyAnimInstance->Montage_Play(ParryMontage);
+			MyAnimInstance->Montage_JumpToSection("Parry", ParryMontage);
 			CombatState = ECombatState::ECS_Parrying;
 
 			const float parryResetTime{ 3.0f };
