@@ -57,15 +57,24 @@ void AMyCharacter::LockEnemy(float deltaTime)
 		FVector enemyLocation = LockedEnemy->GetActorLocation();
 		FVector actorLoc = GetActorLocation();
 		FVector dirToEnemy = (enemyLocation - actorLoc).GetSafeNormal();
-
 		FRotator targetRot = dirToEnemy.Rotation();
 
 		if (PlayerController)
 		{
-			targetRot.Yaw -= 20.0f;
-			FRotator newRot = FMath::RInterpTo(PlayerController->GetControlRotation(), targetRot, deltaTime, 5.0f);
-			PlayerController->SetControlRotation(newRot);
+			FRotator controllerTargetRot = targetRot;
+			controllerTargetRot.Yaw -= 20.0f;
+			FRotator newControllerRot = FMath::RInterpTo(PlayerController->GetControlRotation(), controllerTargetRot, deltaTime, 5.0f);
+			PlayerController->SetControlRotation(newControllerRot);
 		}
+
+		FRotator actorTargetRot = targetRot;
+		actorTargetRot.Yaw += 20.0f;
+
+		FRotator newActorRot = FMath::RInterpTo(GetActorRotation(), actorTargetRot, deltaTime, 5.0f);
+		newActorRot.Pitch = 0.0f;
+		newActorRot.Roll = 0.0f;
+
+		SetActorRotation(newActorRot);
 	}
 }
 
@@ -180,13 +189,13 @@ void AMyCharacter::SwitchStanceCamera(float deltaTime)
 {
 	if (bInterpInProcess && SpringArm)
 	{
-		const FVector CombatStanceOffset = FVector(0.0f, 50.0f, 20.0f);
+		const FVector CombatStanceOffset = FVector(0.0f, 90.0f, 30.0f);
 		FVector SocketToInterp = bCombatStance ? CombatStanceOffset : StartingSocketOffset;
 
 		FVector InterpolatedSocket = FMath::VInterpTo(SpringArm->SocketOffset, SocketToInterp, deltaTime, 2.0);
 		SpringArm->SocketOffset = InterpolatedSocket;
 
-		const float CombatTargetArm = 50.0f;
+		const float CombatTargetArm = 135.0f;
 		float TargetArmToInterp = bCombatStance ? CombatTargetArm : StartingTargetArmLength;
 
 		float InterpolatedTargetArm = FMath::FInterpTo(SpringArm->TargetArmLength, TargetArmToInterp, deltaTime, 2.0);
