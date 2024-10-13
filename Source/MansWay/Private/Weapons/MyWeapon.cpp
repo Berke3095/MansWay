@@ -64,9 +64,24 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		DisableWeaponBox();
 		if (AMyEnemy* enemy = Cast<AMyEnemy>(OtherActor))
 		{
-			int32 random = FMath::RandRange(-10, 10);
-			int32 damage = WeaponDamage + random;
-			enemy->ReduceHP(damage);
+			if (GetOwner()->IsA<AMyCharacter>())
+			{
+				if (AMyCharacter* character = Cast<AMyCharacter>(GetOwner()))
+				{
+					if (character->GetCombatState() == ECombatState::ECS_BasicAttacking)
+					{
+						int32 random = FMath::RandRange(-10, 10);
+						int32 damage = WeaponDamage + random;
+						enemy->ReduceHP(damage);
+					}
+					else if (character->GetCombatState() == ECombatState::ECS_HeavyAttacking)
+					{
+						int32 random = FMath::RandRange(-20, 20);
+						int32 damage = HeavyWeaponDamage + random;
+						enemy->ReduceHP(damage);
+					}
+				}
+			}
 
 			if (enemy->GetHP() <= 0)
 			{
@@ -79,7 +94,7 @@ void AMyWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 		DisableWeaponBox();
 		if (AMyCharacter* character = Cast<AMyCharacter>(OtherActor))
 		{
-			if (character->GetCombatState() == ECombatState::ECS_Parrying && character->GetLockedEnemy() == this->GetOwner())
+			if (character->GetCombatState() == ECombatState::ECS_Parrying && character->GetLockedEnemy() == GetOwner())
 			{
 				if (UMyAnimInstance* characterAnimInstance = character->GetAnimInstance())
 				{

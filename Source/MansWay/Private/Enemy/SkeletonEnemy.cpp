@@ -19,7 +19,7 @@ ASkeletonEnemy::ASkeletonEnemy()
 	Avoidance = 50.0f;
 	AttackCooldown = 1.25f;
 
-	MaxHP = 200;
+	MaxHP = 300;
 	HP = MaxHP;
 }
 
@@ -33,6 +33,8 @@ void ASkeletonEnemy::BeginPlay()
 void ASkeletonEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("EnemyHP: %d"), HP);
 }
 
 void ASkeletonEnemy::AttachStartingWeapon()

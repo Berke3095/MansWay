@@ -60,6 +60,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Attrib")
 	int32 WeaponDamage{};
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attrib")
+	int32 HeavyWeaponDamage{};
+
 public:
 	void SetEquippedSettings();
 	void SetDroppedSettings();
