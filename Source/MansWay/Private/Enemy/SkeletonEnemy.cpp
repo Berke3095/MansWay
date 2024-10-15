@@ -34,7 +34,7 @@ void ASkeletonEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("EnemyHP: %d"), HP);
+	// UE_LOG(LogTemp, Warning, TEXT("EnemyHP: %d"), HP);
 }
 
 void ASkeletonEnemy::AttachStartingWeapon()
